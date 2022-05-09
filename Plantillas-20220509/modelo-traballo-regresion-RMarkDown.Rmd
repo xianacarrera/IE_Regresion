@@ -1,0 +1,52 @@
+---
+title: "Modelo para o Traballo dos Temas 6 e 7 de Inferencia Estatística"
+subtitle: Curso 2020/2021
+author: "Autores/as do traballo"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Este es un documento R Markdown. R Markdown es una sintaxis de formato sencillo para la creación de documentos HTML, PDF o MS Word. Para obtener más detalles sobre el uso de R Markdown, puedes consultar el enlace <http://rmarkdown.rstudio.com>.
+
+Al hacer clic en el botón **knirt** se generará un documento que incluye tanto los códigos como las salida de cualquier código R incrustado dentro del documento. Puedes añadir un fragmento de código R dentro de un \emph{chunck} de la siguiente manera:
+
+```{r cars}
+head(cars,10)
+summary(cars)
+var(cars$speed) # Cuasivarianza 
+```
+
+Además, en este tipo de documentos también puedes emplear sintaxis de LaTeX como ecuaciones:
+$$
+\begin{cases}
+H_0: \beta_1=0,\\
+H_a: \beta_1\neq 0
+\end{cases}
+$$
+o tablas:
+\begin{center}
+\begin{tabular}{ |c c c| }
+ \hline
+ celda1 & celda2 & celda3 \\
+ \hline
+ celda4 & celda5 & celda6 \\  
+ celda7 & celda8 & celda9 \\   
+  \hline
+\end{tabular}
+\end{center}
+
+
+## Incluir gráficos
+
+Por otra parte, también puedes incluir representaciones gráficas en tu documento empleando la sintaxis:
+
+```{r pressure, echo=FALSE}
+boxplot(cars$dist)
+```
+
+Fíjate que añadiendo el parámetro `echo = FALSE' en las opciones del \emph{chuck} evitamos que se imprima el código de R que empleamos para generar la representación gráfica.
