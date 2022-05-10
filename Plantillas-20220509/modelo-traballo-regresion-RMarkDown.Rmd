@@ -167,53 +167,57 @@ T de Student con n-2 grados de libertad
 
 ```{r cars}
 beta0.cuantil <- qt(1-alfa/2, df=n-2); beta0.cuantil
-
 beta0.extremoinferior <- beta0.gorro - beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
 beta0.extremosuperior <- beta0.gorro + beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
-
 beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC
 ```
 
-#***************** beta1
-# pivote beta1.gorro - beta1/sqrt(var.gorro/ (var.X * n)) que es una
-# T de Student con n-2 grados de libertad
+El pivote es ((PASAR A LATEX)) pivote beta1.gorro - beta1/sqrt(var.gorro/ (var.X * n)) que es una
+T de Student con n-2 grados de libertad
 
+```{r cars}
 beta1.cuantil <- beta0.cuantil
-
 beta1.extremoinferior <- beta1.gorro - beta1.cuantil*sqrt(var.error/(var.X * n))
 beta1.extremosuperior <- beta1.gorro + beta1.cuantil*sqrt(var.error/(var.X * n))
-
 beta1.IC <- c(beta1.extremoinferior, beta1.extremosuperior); beta1.IC
+```
 
-
-#***************** varianza del error
-# pivote -> (n-2)*var.error^2/varianzaerror^2 que es una chi-cuadrado con n-2
-# grados de libertad
-
+El pivote para la varianza del error será ((PASAR A LATEX))
+pivote -> (n-2)*var.error^2/varianzaerror^2 que es una chi-cuadrado con n-2
+grados de libertad
+```{r cars}
 var.error.cuantilinferior <- qchisq(alfa/2, df=n-2)
 var.error.cuantilsuperior <- qchisq(1-alfa/2, df=n-2)
-
 var.error.extremoinferior <- (n-2)*var.error^2/var.error.cuantilsuperior
 var.error.extremosuperior <- (n-2)*var.error^2/var.error.cuantilinferior
-
 var.error.IC <- c(var.error.extremoinferior, var.error.extremosuperior); var.error.IC
+```
 
-
-#***************************** "Automático" ************************************
-
-# IC para beta0 y beta1 asumiendo que la varianza es desconocida
+Pero también podemos utilizar las funciones de R para hacerlo de forma automática:
+- IC para beta0 y beta1 asumiendo que la varianza es desconocida
+```{r cars}
 confint(modelo, level=0.99)
+```
 
-# No hay una automatización del cálculo de la varianza del error
+No hay una automatización del cálculo de la varianza del error
 
-
-
-#*******************************************************************************
 # Ejercicio 4
-#*******************************************************************************
+A continuación, realizaremos los contrastes de significación sobre el modelo con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no.
+En primer lugar, realizaremos el contraste de forma manual a partir de los estadísticos de contraste basado en el pivote de la estimaciones puntuales previas:
+```{r cars}
+#contraste de significacion para beta0
+beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1/n + mX^2/(n*var.X)))); beta0.t
+beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n*var.X)); beta1.t
+beta0.t > beta0.cuantil # TRUE --> Aceptamos la hipótesis nula de que el modelo tiene origen distinto de 0 
+beta1.t > beta1.cuantil # TRUE --> Aceptamos la hipótesis nula de que el modelo depende de la variable X
+dt(beta0.t, df=n-2); # El p-valor es 0 --> La hipótesis nula es cierta para cualquier nivel de signif.
 
+```
+
+```
+```{r cars}
 summary(modelo)
-
+```
 
 #*******************************************************************************
 # Ejercicio 5
@@ -240,9 +244,43 @@ predict(modelo, newdata=data.frame("X"=x0, interval = "prediction"), level=0.99)
 
 
 
+# Ejercicio 7
+  Las técnicas de inferencia empleadas hasta el momento son ciertas bajo el supuesto de que las 4 hipótesis del modelo de regresión lineal simple (linealidad, homocedasticidad, normalidad e independencia) se verifican. De lo contrario,
+  no todas las interpretaciones obtenidas seguirían siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de homocedasticidad, normalidad e independencia, los intervalos de confianza que hemos obtenido no serían válidos.
+
+## Linealidad
+En primer lugar, podemos tratar de aventurar si se los datos siguen una tendencia lineal a través de una interpretación gráfica. Para ello, revisitemos la representación previamente definida, y creemos también una nueva gráfica en la que contrapongamos los residuos a los valores de X.
+
+```{r pressure, echo=FALSE}
+par(mfrow=c(1,2))
+
+representar()
+abline(modelo, col="red", lwd=2)
 
 
+residuos <- Y - beta0.gorro - beta1.gorro*X
+plot(X, residuos,
+     main="Diagrama de dispersión", pch=16,
+     sub="Subtítulo")
+abline(h=0, col="red", lwd=2)
+
+par(mfrow=c(1,1))
+```
 
 
+Con el objetivo de realizar una prueba rigurosa, planteamos el siguiente contraste de hipótesis:
+$$
+\begin{cases}
+H_0: Y=\beta_0+\beta_1X+\epsilon\\
+H_a: Y=m(X)+\epsilon
+\end{cases}
+$$
 
+Haciendo uso del paquete _sm_, realizamos la prueba de hipótesis:
+```{r cars}
+library(sm)
+sm.regression(X, Y, model="linear")
+```
+
+La interp
 
