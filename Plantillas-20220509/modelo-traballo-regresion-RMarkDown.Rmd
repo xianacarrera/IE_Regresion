@@ -1,7 +1,7 @@
 ---
-title: "Modelo para o Traballo dos Temas 6 e 7 de Inferencia Estatística"
-subtitle: Curso 2020/2021
-author: "Autores/as do traballo"
+title: "Trabajo de Evaluación Continua de Modelos de Regresión"
+subtitle: Curso 2021/2022
+author: "Xiana Carrera Alonso, Pablo Díaz Viñambres"
 output: pdf_document
 ---
 
@@ -11,17 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-Este es un documento R Markdown. R Markdown es una sintaxis de formato sencillo para la creación de documentos HTML, PDF o MS Word. Para obtener más detalles sobre el uso de R Markdown, puedes consultar el enlace <http://rmarkdown.rstudio.com>.
+Poner introducción aquí
 
-Al hacer clic en el botón **knirt** se generará un documento que incluye tanto los códigos como las salida de cualquier código R incrustado dentro del documento. Puedes añadir un fragmento de código R dentro de un \emph{chunck} de la siguiente manera:
-
-```{r cars}
-head(cars,10)
-summary(cars)
-var(cars$speed) # Cuasivarianza 
-```
 
 Además, en este tipo de documentos también puedes emplear sintaxis de LaTeX como ecuaciones:
+
 $$
 \begin{cases}
 H_0: \beta_1=0,\\
@@ -50,3 +44,205 @@ boxplot(cars$dist)
 ```
 
 Fíjate que añadiendo el parámetro `echo = FALSE' en las opciones del \emph{chuck} evitamos que se imprima el código de R que empleamos para generar la representación gráfica.
+
+
+En primer lugar, leemos los datos del archivo y los colocamos en las variables X e Y.
+Asimismo, leemos el número de datos n.
+
+```{r cars}
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # Configurar wd a la carpeta actual (solo en RStudio) 
+setwd("C:\\Users\\Pablo\\Desktop\\IE_Regresion")
+datos <- read.table("datos_trabajo_temas6y7.txt", header=T, sep=" ", dec=".")
+str(datos)
+summary(datos)
+head(datos)
+
+
+datos = datos[,c("X", "Y47")]
+str(datos)
+X <- datos[,"X"]
+Y <- datos[,"Y47"]
+
+n <- length(Y)
+```
+
+## Ejercicio 2
+En primer lugar, calculamos la covarianza y el coeficiente de correlación de los datos,
+con el objetivo de ver si existe relación lineal entre las variables.
+
+```{r cars}
+covar = cov(X,Y)*(n-1)/n; covar           # Covarianza
+cov(X,Y)                                  # Cuasicovarianza
+cor(X, Y)                                 # Coeficiente de correlación
+```
+
+A  continuación hallamos el vector de medias o centro de gravedad 
+para añadirlo posteriormente a la gráfica:
+
+```{r cars}
+mX <- mean(X)
+mY <- mean(Y)
+```
+
+Y con la siguiente función generamos la gráfica de dispersión básica:
+
+```{r pressure, echo = FALSE}
+representar <- function(){
+  plot(X, Y,
+       main="Diagrama de dispersión", pch=16,
+       sub="Subtítulo")
+  
+  # Añadimos un punto para el vector de medias
+  points(mX, mY, pch=12, col=3, cex=2)
+  
+  # Añadimos dos rectas para dividir en cuadrantes
+  abline(v=mX, col=3, lty=1, lwd=2)   # Vertical
+  abline(h=mY, col=3, lty=1, lwd=2)   # Horizontal
+  
+  
+  grid(nx = NULL, ny = NULL, lty = 2, col = "lightgray", lwd = 1)
+}
+
+representar()
+```
+
+Finalmente, establecemos el modelo lineal entre los datos 
+```{r cars}
+modelo=lm(Y~X)
+modelo
+```
+
+## Ejercicio 2
+### Estimación puntual a mano
+Para la estimación puntual de los parámetros intercepto $\beta_0$, pendiente
+$beta_1$ y varianza del error $\sigma^2$ podemos aplicar directamente las fórmulas
+obtenidas en la parte teórica de la asignatura:
+```{r cars}
+var.X <- var(X)*(n-1)/n
+beta0.gorro = mY - covar*mX/var.X; beta0.gorro
+beta1.gorro = covar/var.X; beta1.gorro
+var.error = sum((Y - beta0.gorro - beta1.gorro*X)^2)/(n-2); var.error
+sd.error = sqrt(var.error); sd.error
+```
+
+### Estimación puntual automática
+De manera alternativa, podemos obtenrlas a partir del propio modelo creado anteriomente por $\mathbb{R}$:
+```{r cars}
+modelo    # Información del modelo
+modelo$coefficients         # beta0 gorro y beta1 gorro
+
+# En modelo$residuals están los residuos
+sum(modelo$residuals^2)/(n-2)
+```
+
+
+```{r pressure, echo=FALSE}
+representar()
+abline(modelo, col="red", lwd=2)
+```
+
+Incluimos también una gráfica adicional usando la librería _ggplot2_ e incluyendo la región
+o intervalo de confianza para los datos al nivel del 99%:
+```{r pressure, echo=FALSE}
+library(ggplot2)
+p3 <- ggplot(datos, aes(x=X, y=Y)) +
+  geom_point() +
+  geom_smooth(formula=y~x, level=0.99, method=lm, color="red", fill="#666666", se=TRUE) + 
+  labs(y = "Variable respuesta",
+       x = "Variable explicativa",
+       title = "Modelo lineal simple, con región de confianza al 95%")
+p3
+```
+
+## Ejercicio 3
+### A mano
+En el siguiente apartado, En primer lugar, establecemos el nivel de significación $\alfa$.
+```{r cars}
+alfa <- 1 - 0.99
+```
+
+A continuación, hallamos los intervalos para 
+El pivote es ((PASAR A LATEX)) beta0.gorro - beta0/(sqrt(var.gorro*(1/n+mX^2/(n*var.X))) que es una
+T de Student con n-2 grados de libertad
+
+```{r cars}
+beta0.cuantil <- qt(1-alfa/2, df=n-2); beta0.cuantil
+
+beta0.extremoinferior <- beta0.gorro - beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
+beta0.extremosuperior <- beta0.gorro + beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
+
+beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC
+```
+
+#***************** beta1
+# pivote beta1.gorro - beta1/sqrt(var.gorro/ (var.X * n)) que es una
+# T de Student con n-2 grados de libertad
+
+beta1.cuantil <- beta0.cuantil
+
+beta1.extremoinferior <- beta1.gorro - beta1.cuantil*sqrt(var.error/(var.X * n))
+beta1.extremosuperior <- beta1.gorro + beta1.cuantil*sqrt(var.error/(var.X * n))
+
+beta1.IC <- c(beta1.extremoinferior, beta1.extremosuperior); beta1.IC
+
+
+#***************** varianza del error
+# pivote -> (n-2)*var.error^2/varianzaerror^2 que es una chi-cuadrado con n-2
+# grados de libertad
+
+var.error.cuantilinferior <- qchisq(alfa/2, df=n-2)
+var.error.cuantilsuperior <- qchisq(1-alfa/2, df=n-2)
+
+var.error.extremoinferior <- (n-2)*var.error^2/var.error.cuantilsuperior
+var.error.extremosuperior <- (n-2)*var.error^2/var.error.cuantilinferior
+
+var.error.IC <- c(var.error.extremoinferior, var.error.extremosuperior); var.error.IC
+
+
+#***************************** "Automático" ************************************
+
+# IC para beta0 y beta1 asumiendo que la varianza es desconocida
+confint(modelo, level=0.99)
+
+# No hay una automatización del cálculo de la varianza del error
+
+
+
+#*******************************************************************************
+# Ejercicio 4
+#*******************************************************************************
+
+summary(modelo)
+
+
+#*******************************************************************************
+# Ejercicio 5
+#*******************************************************************************
+
+x0 <- c(2, 4, 6)
+
+y0.tilde <- beta0.gorro + beta1.gorro * x0
+
+
+#*********** IC
+
+
+
+
+
+
+
+# Con qué nivel de confianza?
+predict(modelo, newdata=data.frame("X"=x0), interval = "confidence", level=0.99)
+predict(modelo, newdata=data.frame("X"=x0, interval = "prediction"), level=0.99)
+
+
+
+
+
+
+
+
+
+
+
