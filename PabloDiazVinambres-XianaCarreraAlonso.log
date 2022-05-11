@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  11 MAY 2022 19:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  12 MAY 2022 01:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**divideyvenceras.tex
-(./divideyvenceras.tex
+**PabloDiazVinambres-XianaCarreraAlonso.tex
+(./PabloDiazVinambres-XianaCarreraAlonso.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-05-04> (c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
@@ -309,8 +309,8 @@ Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
 File: l3backend-pdftex.def 2022-04-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count288
 \l__pdf_internal_box=\box53
-) (./divideyvenceras.aux)
-\openout1 = `divideyvenceras.aux'.
+) (./PabloDiazVinambres-XianaCarreraAlonso.aux)
+\openout1 = `PabloDiazVinambres-XianaCarreraAlonso.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 117.
 LaTeX Font Info:    ... okay on input line 117.
@@ -349,9 +349,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 117.
 LaTeX Info: Redefining \pageref on input line 117.
 LaTeX Info: Redefining \nameref on input line 117.
-(./divideyvenceras.out) (./divideyvenceras.out)
+(./PabloDiazVinambres-XianaCarreraAlonso.out) (./PabloDiazVinambres-XianaCarreraAlonso.out)
 \@outlinefile=\write4
-\openout4 = `divideyvenceras.out'.
+\openout4 = `PabloDiazVinambres-XianaCarreraAlonso.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -418,61 +418,84 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 119.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 128.
+(Font)              <10> on input line 151.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 128.
+(Font)              <7> on input line 151.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 128.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 149.
+(Font)              <5> on input line 151.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 175.
 (c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
 
-{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5] [6] [7] [8]
-<divideyvenceras_files/figure-latex/dispersion-1.pdf, id=93, 469.755pt x 325.215pt>
-File: divideyvenceras_files/figure-latex/dispersion-1.pdf Graphic file (type pdf)
-<use divideyvenceras_files/figure-latex/dispersion-1.pdf>
-Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersion-1.pdf  used on input line 691.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 691--697
-[][]
+{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (48.18648pt too wide) in paragraph at lines 203--207
+\T1/lmr/m/n/10 tes no ha sido pre-vi-a-mente in-sta-l-ado, debe eje-cu-tarse la in-struc-ciÛn \texttt{_install.packages(``nombre_del_paquete'')}. 
  []
 
-[9 <./divideyvenceras_files/figure-latex/dispersion-1.pdf>] [10]
-<divideyvenceras_files/figure-latex/dispersionReg-1.pdf, id=114, 469.755pt x 325.215pt>
-File: divideyvenceras_files/figure-latex/dispersionReg-1.pdf Graphic file (type pdf)
-<use divideyvenceras_files/figure-latex/dispersionReg-1.pdf>
-Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersionReg-1.pdf  used on input line 824.
+[2] [3]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf, id=94, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf  used on input line 428.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=115, 469.755pt x 325.215pt>
-File: divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf Graphic file (type pdf)
-<use divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf>
-Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf  used on input line 829.
+[4] [5 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf>]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 515.
+
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf, id=111, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf  used on input line 541.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[6] [7 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>] [8]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf, id=136, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf  used on input line 698.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (156.2486pt too wide) in paragraph at lines 826--830
-\T1/lmr/m/n/10 anza para los datos al nivel del 99%: [] 
+Overfull \hbox (53.05399pt too wide) in paragraph at lines 696--699
+\T1/lmr/m/n/10 del mod-elo: [] 
  []
 
-[11 <./divideyvenceras_files/figure-latex/dispersionReg-1.pdf>] [12 <./divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [13]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=137, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf  used on input line 703.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-! LaTeX Error: Unicode character ùëã (U+1D44B)
-               not set up for use with LaTeX.
+Overfull \hbox (182.6373pt too wide) in paragraph at lines 700--704
+\T1/lmr/m/n/10 anza para los datos al nivel fi-jado del 99%: [] 
+ []
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1039 ...å. Interpreta los resultados obtenidos.}
-                                                   
+[9 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>] [10 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [11] [12]
+Overfull \hbox (1960.98792pt too wide) in paragraph at lines 929--929
+[]\T1/lmtt/m/n/10 Habiendo fijado previamente el nivel de significaciÛn $\alpha = 0.01$, llegamos en ambos casos a que noe existen evidencias estadÌsticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo ser·n distintos de 0. En base a esto, lo sensato ser· no simplificar nuestro modelo y continuar realizando regresiÛn lineal con estos 2 par·metros.[] 
+ []
+
+
+Overfull \hbox (926.74092pt too wide) in paragraph at lines 929--929
+[]\T1/lmtt/m/n/10 Como vemos, en ambos contrastes el p-valor es pr·cticamente nulo ($<10^-50$), lo cual nos indica que las pruebas para rechazar la hipÛtesis nula son estadÌsticamente significativas para los niveles de significaciÛn habituales o incluso con precisiones mucho mayores.[] 
+ []
+
+
+Overfull \hbox (527.74208pt too wide) in paragraph at lines 929--929
+[]\T1/lmtt/m/n/10 Alternativamente, podemos obtener los valores de estos dos contrastes de significaciÛn y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la funciÛn summary:[] 
+ []
+
+[13]
+! Undefined control sequence.
+l.1056 ...i=1}^n (\hat{\beta_0} + \hat{\beta_1}\cx
+                                                  _i - \overline{Y})^2 
 Here is how much of TeX's memory you used:
- 11368 strings out of 480260
- 179330 string characters out of 5892356
- 488247 words of memory out of 5000000
- 29072 multiletter control sequences out of 15000+600000
- 519445 words of font info for 69 fonts, out of 8000000 for 9000
+ 11401 strings out of 480260
+ 181153 string characters out of 5892356
+ 473781 words of memory out of 5000000
+ 29091 multiletter control sequences out of 15000+600000
+ 526060 words of font info for 73 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,6n,63p,444b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 60i,9n,63p,521b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 !  ==> Fatal error occurred, no output PDF file produced!
