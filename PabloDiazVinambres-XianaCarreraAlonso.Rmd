@@ -46,6 +46,12 @@ boxplot(cars$dist)
 Fíjate que añadiendo el parámetro `echo = FALSE' en las opciones del \emph{chuck} evitamos que se imprima el código de R que empleamos para generar la representación gráfica.
 
 
+# Librerías
+```{r cars}
+
+```
+
+
 En primer lugar, leemos los datos del archivo y los colocamos en las variables X e Y.
 Asimismo, leemos el número de datos n.
 
@@ -205,43 +211,63 @@ No hay una automatización del cálculo de la varianza del error
 A continuación, realizaremos los contrastes de significación sobre el modelo con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no.
 En primer lugar, realizaremos el contraste de forma manual a partir de los estadísticos de contraste basado en el pivote de la estimaciones puntuales previas:
 ```{r cars}
-#contraste de significacion para beta0
+# Contraste de significacion para beta0
 beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1/n + mX^2/(n*var.X)))); beta0.t
 beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n*var.X)); beta1.t
-beta0.t > beta0.cuantil # TRUE --> Aceptamos la hipótesis nula de que el modelo tiene origen distinto de 0 
-beta1.t > beta1.cuantil # TRUE --> Aceptamos la hipótesis nula de que el modelo depende de la variable X
-dt(beta0.t, df=n-2); # El p-valor es 0 --> La hipótesis nula es cierta para cualquier nivel de signif.
-
+# Rechazamos la hipótesis nula de que el modelo tiene origen de 0
+beta0.t > beta0.cuantil 
+# Rechazamos la hipótesis nula de que el modelo no tiene pendiente
+beta1.t > beta1.cuantil
+# El p-valor es 0 --> La hipótesis nula es falsa para cualquier nivel de signif. --> El modelo tiene un intercepto distinto de 0
+beta0.pvalor = dt(beta0.t, df=n-2); beta0.pvalor
+# El p-valor es 0 --> La hipótesis nula es falsa para cualquier nivel de signif. --> El modelo tiene una pendiente distinta de 0
+beta1.pvalor = dt(beta1.t, df=n-2); beta1.pvalor
 ```
 
-```
+De esto deducimos que existen pruebas estadísticamente significativas de que $\beta_0 \neq 0$, lo cuál nos indica que el intercepto es distinto de 0. Por otro lado, también existen pruebas de $\beta_1 \neq 0$, de dónde deducimos que realmente la variable explicativa influye en la variable respuesta. 
+
+Alternativamente, podemos obtener los valores de estos dos contrastes de significación y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la función summary:
 ```{r cars}
 summary(modelo)
 ```
+En concreto, los valores relevantes son el t-value y el Pr(>|t|) de las filas (Intercept) y X que se corresponden al valor observado del estadístico observado y su p-valor en el contraste sobre el intercepto $\beta_0$ y la pendiente $\beta_1$. Obtenemos los mismos datos que en el cálculo manual.
 
-#*******************************************************************************
-# Ejercicio 5
-#*******************************************************************************
+En base a los resultados obtenidos anteriormente, decidimos no simplificar más nuestro modelo y continuar realizando regresión lineal.
 
-x0 <- c(2, 4, 6)
+## Ejercicio 5
+En este apartado, consideramos 3 nuevos valores para la variable explicativa $X = 2, 4, 6$. Para obtener intervalos de confianza para la media de Y condicionada a estos valores y de predicción, es necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es debido a que no sabemos como se comporta el modelo fuera del rango observado, y nuestro objetivo es predecir y no extrapolar.
+```{r cars}
+nuevosValores <- c(2, 4, 6)
+# El rango está contenido
+min(X) < min(nuevosValores) && max(X) > max(nuevosValores)
+# Construimos un data.frame  con los nuevos datos ya que predict necesita este formato para sus predicciones
+nuevosDatos = data.frame("X" = nuevosValores)
+```
+Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función predict sobre el modelo de R. Obtendremos ambos intervalos para los niveles de significación 0.95 y 0.99. ((TODO: REVISAR, ESTOS ESTÁN BIEN PERO DEBERÍAN SER CONSISTENTES CON OTRAS PARTES DONDE COJAMOS ALFAS ARBITRARIOS))
 
-y0.tilde <- beta0.gorro + beta1.gorro * x0
-
-
-#*********** IC
-
-
-
-
-
-
-
-# Con qué nivel de confianza?
-predict(modelo, newdata=data.frame("X"=x0), interval = "confidence", level=0.99)
-predict(modelo, newdata=data.frame("X"=x0, interval = "prediction"), level=0.99)
-
-
-
+En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$ obtenemos los asociados a la media condicionada.
+```{r cars}
+predict(modelo, newdata = nuevosDatos, interval = "confidence", level=0.95)
+predict(modelo, newdata = nuevosDatos, interval = "confidence", level=0.99)
+```
+Y para obtener los intervalos de predicción, los cuáles serán más amplios que los anteriores, pasamos el argumento $\texttt{interval = "prediction"}$
+```{r cars}
+predict(modelo, newdata = nuevosDatos, interval = "prediction", level=0.95)
+predict(modelo, newdata = nuevosDatos, interval = "prediction", level=0.99)
+```
+# Ejercicio 6 
+<!-- 
+  lol este RMarkdown usa html comments
+  Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado. 
+  de los apuntes:
+    Para analizar el cumplimiento de la hipótesis de normalidad, no emplearemos los gráficos an-
+    teriores sino que efectuaremos un test de bondad de ajuste a la distribución normal sobre los
+    residuos. Para ello, podemos emplear un test de tipo Kolmogorov-Smirnov, el test de Shapiro-
+    Wilk o un test ji-cuadrado. Nos decantaremos por el test de Shapiro-Wilk, que está especial-
+    mente diseñado para el contraste de normalidad. Omitimos los detalles sobre la construcción
+    de este test.
+  así que habrá que usar el test de ben saphiro
+-->
 
 
 # Ejercicio 7
@@ -308,7 +334,7 @@ FALTA ANALIZAR EL P-VALOR
 
 ## Homocedasticidad
 Contrapongamos ahora los residuos del modelo a la variable explicativa. Se muestra también el diagrama de dispersión original:
-```{r cars}
+```{r pressure, echo=FALSE}
 par(mfrow=c(1,2))
 
 representar()
@@ -347,17 +373,17 @@ El p-valor es de 0.763.
 
 
 ## Normalidad
-Para corroborar que el error tiene distribución normal, haremos varias representaciones gráficas que nos permitan intuir si la hipótesis se ajusta a los datos. Trabajaremos con los residuos estandarizados, para tener en cuenta que la correlación entre 2 de ellos puede variar.
+Para corroborar que el error tiene distribución normal, haremos varias representaciones gráficas que nos permitan intuir si la hipótesis se ajusta a los datos. Trabajaremos con los residuos estandarizados, pues no tienen la misma varianza y la correlación entre cada 2 de ellos puede ser distinta (provienen de distribuciones diferentes).
 
 Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería _car_), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
 
-```{r cars}
+```{r pressure, echo=FALSE}
 residuos.estan = rstandard(modelo)
 
 par(mfrow = c(1, 3 )) 
 
 library(viridis)
-hist(residuos.estan, col=viridis(11))
+hist(residuos.estan, col=c(viridis(n=5, begin=0, end=0.8), viridis(n=1, begin=1), viridis(n=5, begin=0.8, end=0)))
 rug(residuos.estan)
 
 boxplot(residuos.estan, col="gray")
@@ -366,9 +392,11 @@ library(car)
 qqPlot(residuos.estan)
 ```
 
+En el histograma podemos apreciar una cierta asimetría hacia la derecha (valores más altos). En el boxplot o diagrama de caja vemos que la media está centrada en el centro de la caja, un buen indicador. No obstante, la cola izquierda es de una longitud ligeramente mayor, lo cual es indicativo de la asimetría mencionada, al estar los datos más concentrados alrededor de valores más altos.
 
+El QQPlot o diagrama cuantil-cuantil nos presenta una comparativa entre los cuantil muestrales de los residuos estandarizados y los cuantiles teóricos de una normal estándar. Si los residuos estandarizados presentaran una distribución normal de media 0 y varianza 1, se situarían alrededor de la recta diagonal resaltada. En nuestro caso, vemos que en la zona central el ajuste es bueno, pero hay una cierta desviación en las colas. Esto es especialmente notorio en la superior, donde los cuantiles muestrales son algo inferiores a los cuantiles teóricos de una normal, que es lógico y coherente con la asimetría indicada anteriormente.
 
-emplearemos directamente un test de bondad de ajuste sobre los errores estandarizados, con respecto a dicha distribución. Aunque hay varias opciones adecuadas, como el test de Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado con este propósito es el test de Shapiro-Wilk, especialmente diseñado para contrastes de normalidad:
+Ahora bien, una representación visual es solamente un apoyo al estudio, y no podemos inferir de ella una conclusión estadísticamente definitoria. Para ello , emplearemos  directamente un test de bondad de ajuste sobre los errores estandarizados con respecto a una distribución normal. Aunque hay varias opciones adecuadas, como el test de Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado con este propósito es el test de Shapiro-Wilk, especialmente diseñado para contrastes de normalidad:
 
 $$
 \begin{cases}
@@ -377,12 +405,36 @@ H_a: \epsilon\text{ no sigue una distribución normal}
 \end{cases}
 $$
 
-Como observación, comentamos que el motivo por el cual se estandarizan los residuos es para tener en cuenta que la correlación entre 2 de ellos puede variar.
-
 Ejecutemos pues el contraste de especificación mencionado:
 ```{r cars}
-
+shapiro.test(residuos.estan)
 ```
 
+También podemos comprobar los resultados de otros tests:
+```{r cars}
+ks.test(residuos.estan)
+library(nortest)     # Necesario para lillie.test
+lillie.test(residuos.estan)
+```
+
+Una observación adicional: en este caso, tenemos que el tamaño de la muestra, n, es mayor que 30, de modo que se pueden despreciar las impurezas debidas a utilizar los residuos en el estudio de la normalidad, en lugar de los errores (que no están sujetos a la aplicación del ajuste de mínimos cuadrados).
+```{r cars}
+n
+````
+
+
+## Independencia
+De entre las 4 hipótesis con las que trabaja el modelo, la independencia de los errores es la más difícil de corroborar. No tenemos información acerca del proceso de recogida de muestras, por lo que no podemos garantizarla en base a que los datos hayan sido medidos sobre objetos o individuos de forma independiente.
+
+Debido a la complejidad inherente a este apartado, nos limitaremos a comprobar la independencia temporal. Para ello, asumiremos que nuestros datos han sido medidos a lo largo del tiempo. 
+
+Nos preguntamos entonces si existe algún tipo de relación entre las observaciones, esto es:
+$$
+\begin{cases}
+H_0: \epsilon\text{ son incorrelacionados}\\
+H_a: \epsilon\text{ son correlacionados de orden k}
+\end{cases}
+$$
+En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Así, fijado un k y dados unos errores $$
 
 
