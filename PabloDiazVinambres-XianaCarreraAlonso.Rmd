@@ -97,6 +97,8 @@ A  continuación hallamos el vector de medias o centro de gravedad aplicando \te
 ```{r medias}
 mX <- mean(X)
 mY <- mean(Y)
+
+c(mX, mY)    # Mostramos el vector de medias
 ```
 
 Y con la siguiente función generamos el diagrama de dispersión de los datos:
