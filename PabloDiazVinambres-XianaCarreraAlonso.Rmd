@@ -46,34 +46,70 @@ boxplot(cars$dist)
 Fíjate que añadiendo el parámetro `echo = FALSE' en las opciones del \emph{chuck} evitamos que se imprima el código de R que empleamos para generar la representación gráfica.
 
 
+# Introducción
+En este documento se describe y documenta el ajuste y análisis de un modelo de regresión lineal simple en base a los datos proporcionados para una variable explicativa X y una variable respuesta Y. 
+
+El estudio se fundamentará en los conceptos teóricos relacionados con los modelos de regresión lineal simple y su validación que fueron estudiados a lo largo de los Temas 6 y 7 de la asignatura de Inferencia Estadística. Se hará referencia explícita a los mismos a medida que sean empleados.
+
+Asimismo, se utilizará R para realizar las operaciones necesarias para el análisis. Los detalles relativos al empleo de sus funciones se detallarán o bien en el propio informe o bien a través de comentarios sobre el código.
+
+# Cuestiones preliminares
+En cada una de las secciones del documento se trabajará con $\alpha = 0.01$ para los distintos contrastes, intervalos de confianza, etc. planteados. Equivalentemente, se empleará un nivel de significación $1 - \alpha = 0.99$.
+
+Esta elección responde a la imposición (PENSAR PALABRA MEJOR) de emplear un nivel de significación del 99% para la construcción de intervalos de confianza de los parámetros del modelo. Es preferible mantener un nivel uniforme durante todo el estudio, con el objetivo de mantener un criterio homogéneo a la hora de interpretar los resultados y hacer inferencia en consecuencia. 
+
+
 # Librerías
+Cargamos a continuación todas las librerías que utilizaremos a lo largo de la ejecución. Si alguno de los paquetes no ha sido previamente instalado, debe ejecutarse la instrucción _install.packages("nombre_del_paquete")_, 
 ```{r cars}
+#install.packages("paquete_de_ejemplo")
 
 ```
 
 
-En primer lugar, leemos los datos del archivo y los colocamos en las variables X e Y.
-Asimismo, leemos el número de datos n.
+# Lectura de datos
+
+En primer lugar, leemos los datos del archivo proporcionado, que cuenta con 76 variables respuesta, Y1, ..., Y76, y una variable explicativa común, X. En nuestro caso, limitaremos el estudio a Y47, que denotaremos sencillamente como Y de aquí en adelante.
+
+Nada más importar el archivo (para lo cual es necesario que el usuario cambie el directorio actual, empleando, por ejemplo, _setwd_ o _Ctrl + May + H_), realizamos un pequeño análisis estadístico de los datos empleando las funciones estándar _head_, _class_, _names_, _str_ y _summary_.
+
+Por comodidad para cálculos posteriores, también guardamos el número de datos, n.
 
 ```{r cars}
 #setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # Configurar wd a la carpeta actual (solo en RStudio) 
+# Ejemplo de uso de setwd para cambiar el directorio actual:
 #setwd("C:\\Users\\Pablo\\Desktop\\IE_Regresion")
+
+# Leemos los datos empleando read.table (por la extensión .txt)
+# Indicamos que existe una cabecera, que las columnas están separadas por espacios y que el signo decimal es el punto.
 datos <- read.table("datos_trabajo_temas6y7.txt", header=T, sep=" ", dec=".")
-str(datos)
-summary(datos)
+# Comprobamos la estructura de las primeras filas
 head(datos)
 
+# Comprobamos que el objeto resultante es un data.frame
+class(datos)
 
-datos = datos[,c("X", "Y47")]
+# Vemos los nombres de las variables
+names(datos)
+
+# Comprobamos la estructura de los datos
 str(datos)
+
+# Y realizamos un pequeño análisis estadístico
+summary(datos)
+
+# Seleccionamos las dos variables de interés
 X <- datos[,"X"]
 Y <- datos[,"Y47"]
 
+# Guardamos el número de datos
 n <- length(Y)
 ```
 
-## Ejercicio 2
-En primer lugar, calculamos la covarianza y el coeficiente de correlación de los datos,
+# 1) Relación entre variable explicativa y variable respuesta
+En primer lugar, calculamos la covarianza entre las variables. Debemos tener en cuenta que R la calcula como una 'cuasi'covarianza, es decir, dividiendo entre $n-1$ en lugar de entre $n$. Para corregirlo, multiplicamos por $n-1$ y dividimos entre $n$, aunque también mostraremos el valor original.
+
+y el coeficiente de correlación de los datos,
 con el objetivo de ver si existe relación lineal entre las variables.
 
 ```{r cars}
@@ -435,6 +471,17 @@ H_0: \epsilon\text{ son incorrelacionados}\\
 H_a: \epsilon\text{ son correlacionados de orden k}
 \end{cases}
 $$
-En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Así, fijado un k y dados unos errores $$
+En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Así, fijado un k y dados unos errores 
 
+
+BONDAD DE AJUSTE ES EL COEFICIENTE DE DETERMINACIÓN (ES UNA MEDIDA DE CUÁNTO DE BUENO ES EL MODELO). EL R^2 AJUSTADO ES OTRA MEDIDA DE BONDAD DE AJUSTE. TAMBIÉN HAY CONTRASTES. ESTÁ EN EL SUMMARY.
+
+ACEPTAR LA H0 EN CONTRASTE LINEALIDAD POLINÓMICO SOLO SIGNIFICA QUE MI MODELO ES MEJOR QUE UN POLINÓMICO DE ORDEN 2, 3...
+
+EL SM TE LO CONTRASTA CON ALTERNATIVA NO PARAMÉTRICA -> ES MEJOR MI MODELO QUE CUALQUIER OTRA COSA? CON HACER ESTE ES SUFICIENTE
+
+a veces las formas raras en homocedasticidad (qqplot) se pueden deber a falta de linealidad. Es más conncluyente el contraste
+
+
+HAY QUE FIJAR EL ALFA DESDE EL PRINCIPIO. METER YA DESDE LA INTRODUCCIÓN. EN ESTE CASO TENDREMOS QUE FIJAR ALFA = 1% (NIVEL 99%) POR EL APARTADO 3
 
