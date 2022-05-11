@@ -1,0 +1,1143 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Trabajo de Evaluación Continua de Modelos de Regresión},
+  pdfauthor={Xiana Carrera Alonso, Pablo Díaz Viñambres},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Trabajo de Evaluación Continua de Modelos de Regresión}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Curso 2021/2022}
+\author{Xiana Carrera Alonso, Pablo Díaz Viñambres}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{r-markdown}{%
+\subsection{R Markdown}\label{r-markdown}}
+
+Poner introducción aquí
+
+o tablas:
+
+\begin{center}
+\begin{tabular}{ |c c c| }
+ \hline
+ celda1 & celda2 & celda3 \\
+ \hline
+ celda4 & celda5 & celda6 \\  
+ celda7 & celda8 & celda9 \\   
+  \hline
+\end{tabular}
+\end{center}
+
+\hypertarget{introducciuxf3n}{%
+\section{Introducción}\label{introducciuxf3n}}
+
+En el siguiente informe se hará un estudio estadístico en el que se
+analizará la influencia de la variable X sobre la variable Y, en el
+marco de la regresión lineal.
+
+\hypertarget{libreruxedas-utilizadas}{%
+\subsection{Librerías utilizadas}\label{libreruxedas-utilizadas}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)      }\CommentTok{\# Para diagrama de dispersión con región de confianza}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lmtest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'lmtest' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: zoo
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'zoo' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'zoo'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(sm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'sm' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{verbatim}
+## Package 'sm', version 2.2-5.7: type help(sm) for summary information
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rpanel)   }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'rpanel' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: tcltk
+\end{verbatim}
+
+\begin{verbatim}
+## Package `rpanel', version 1.1-5: type help(rpanel) for summary information
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(viridis)      }\CommentTok{\# Para gradiente de colores en gráfica de normalidad}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'viridis' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: viridisLite
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'viridisLite' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(nortest)      }\CommentTok{\# Necesario para lillie.test}
+\FunctionTok{library}\NormalTok{(car)          }\CommentTok{\# Necesario para QQPlot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: carData
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'carData' was built under R version 4.1.3
+\end{verbatim}
+
+\hypertarget{lectura-de-datos}{%
+\subsection{Lectura de datos}\label{lectura-de-datos}}
+
+En primer lugar, leemos los datos del archivo y los colocamos en las
+variables X e Y. Asimismo, leemos el número de datos n.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) \# Configurar wd a la carpeta actual (solo funciona en RStudio) }
+
+\CommentTok{\# Leemos las columnas X e Y47 del archivo de datos y los ponemos en sendas variables X e Y}
+\NormalTok{datos }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"datos\_trabajo\_temas6y7.txt"}\NormalTok{, }\AttributeTok{header=}\NormalTok{T, }\AttributeTok{sep=}\StringTok{" "}\NormalTok{, }\AttributeTok{dec=}\StringTok{"."}\NormalTok{)}
+\NormalTok{datos }\OtherTok{=}\NormalTok{ datos[,}\FunctionTok{c}\NormalTok{(}\StringTok{"X"}\NormalTok{, }\StringTok{"Y47"}\NormalTok{)] }\CommentTok{\# Filtramos el archivo, solo nos interesan las columnas X e Y47}
+\FunctionTok{str}\NormalTok{(datos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    120 obs. of  2 variables:
+##  $ X  : num  1.14 6.22 6.09 6.23 8.61 ...
+##  $ Y47: num  1.46 -1.21 -2.15 -2.13 -4.96 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(datos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        X              Y47         
+##  Min.   :0.095   Min.   :-7.0839  
+##  1st Qu.:1.795   1st Qu.:-2.4687  
+##  Median :3.232   Median : 0.1661  
+##  Mean   :4.268   Mean   :-0.1815  
+##  3rd Qu.:6.667   3rd Qu.: 2.3278  
+##  Max.   :9.921   Max.   : 5.9654
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(datos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        X     Y47
+## 1 1.1370  1.4567
+## 2 6.2230 -1.2109
+## 3 6.0927 -2.1529
+## 4 6.2338 -2.1343
+## 5 8.6092 -4.9584
+## 6 6.4031 -1.3663
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(datos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    120 obs. of  2 variables:
+##  $ X  : num  1.14 6.22 6.09 6.23 8.61 ...
+##  $ Y47: num  1.46 -1.21 -2.15 -2.13 -4.96 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{X }\OtherTok{\textless{}{-}}\NormalTok{ datos[,}\StringTok{"X"}\NormalTok{]}
+\NormalTok{Y }\OtherTok{\textless{}{-}}\NormalTok{ datos[,}\StringTok{"Y47"}\NormalTok{]}
+\NormalTok{n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(Y)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ejercicio-1}{%
+\subsection{Ejercicio 1}\label{ejercicio-1}}
+
+\textit{Analiza la relación entre la variable explicativa y la variable respuesta a través de
+la covarianza y del coeficiente de correlación. Apoya este análisis con una
+representación gráfica.}
+
+En primer lugar, calculamos la covarianza y el coeficiente de
+correlación de los datos, con el objetivo de ver si existe relación
+lineal entre las variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{covar }\OtherTok{=} \FunctionTok{cov}\NormalTok{(X,Y)}\SpecialCharTok{*}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{)}\SpecialCharTok{/}\NormalTok{n; covar           }\CommentTok{\# Covarianza}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -8.275695
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cov}\NormalTok{(X,Y)                                  }\CommentTok{\# Cuasicovarianza}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -8.345238
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor}\NormalTok{(X, Y)                                 }\CommentTok{\# Coeficiente de correlación}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -0.9506962
+\end{verbatim}
+
+Como vemos, tanto la covarianza como la correlación son negativas. En el
+caso de la covarianza, esta no nos indica una medida fiable de la
+relación entre los datos, ya que depende de la escala de los datos. Sin
+embargo, la correlación, con un valor de -0.95 nos da a entender una
+relación de proporcionalidad inversa entre X e Y, que podremos
+corroborar posteriormente al ver el diagrama de dispersión.
+
+A continuación hallamos el vector de medias o centro de gravedad
+aplicando \texttt{mean} en ambas variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mX }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X)}
+\NormalTok{mY }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y)}
+\end{Highlighting}
+\end{Shaded}
+
+Y con la siguiente función generamos el diagrama de dispersión de los
+datos:
+
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf}
+Fácilmente observamos que la nube de puntos toma una forma descendente,
+lo cuál encaja con el hecho de que la correlación entre X e Y sea
+negativa. También vemos que los datos están, de forma aproximada,
+uniformemente alineados en torno a una forma rectilínea. Todo esto
+motiva el establecimiento de un modelo lineal para la relación entre
+ambas variables. Recordemos que los modelos lineales son de la forma: \[
+Y = \beta_0 + \beta_1X + \epsilon
+\] Ajustamos entonces este modelo a nuestros datos mediante la función
+lm:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo }\OtherTok{=} \FunctionTok{lm}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\NormalTok{X); modelo}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Coefficients:
+## (Intercept)            X  
+##       4.184       -1.023
+\end{verbatim}
+
+y obtenemos un intercepto \(\beta_0 = 4.184\) y una pendiente de
+\(\beta_1 = -1.023\), lo cuál concuerda con lo observado anteriormente
+en la nube de puntos.
+
+En los siguientes ejercicios, analizaremos más en profundidad este
+modelo. Además, lo validaremos frente a otros modelos como los
+polinómicos o los no paramétricos.
+
+\hypertarget{ejercicio-2}{%
+\subsection{Ejercicio 2}\label{ejercicio-2}}
+
+\hypertarget{estimaciuxf3n-puntual-a-mano}{%
+\subsubsection{Estimación puntual a
+mano}\label{estimaciuxf3n-puntual-a-mano}}
+
+Para la estimación puntual de los parámetros intercepto \(\beta_0\),
+pendiente \(beta_1\) y varianza del error \(\sigma^2\) podemos aplicar
+directamente las fórmulas obtenidas en la parte teórica de la
+asignatura:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var.X }\OtherTok{\textless{}{-}} \FunctionTok{var}\NormalTok{(X)}\SpecialCharTok{*}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{)}\SpecialCharTok{/}\NormalTok{n}
+\NormalTok{beta0.gorro }\OtherTok{=}\NormalTok{ mY }\SpecialCharTok{{-}}\NormalTok{ covar}\SpecialCharTok{*}\NormalTok{mX}\SpecialCharTok{/}\NormalTok{var.X; beta0.gorro}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.184343
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta1.gorro }\OtherTok{=}\NormalTok{ covar}\SpecialCharTok{/}\NormalTok{var.X; beta1.gorro}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -1.022889
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var.error }\OtherTok{=} \FunctionTok{sum}\NormalTok{((Y }\SpecialCharTok{{-}}\NormalTok{ beta0.gorro }\SpecialCharTok{{-}}\NormalTok{ beta1.gorro}\SpecialCharTok{*}\NormalTok{X)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{/}\NormalTok{(n}\DecValTok{{-}2}\NormalTok{); var.error}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.916048
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sd.error }\OtherTok{=} \FunctionTok{sqrt}\NormalTok{(var.error); sd.error}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.957104
+\end{verbatim}
+
+\hypertarget{estimaciuxf3n-puntual-automuxe1tica}{%
+\subsubsection{Estimación puntual
+automática}\label{estimaciuxf3n-puntual-automuxe1tica}}
+
+De manera alternativa, podemos obtenrlas a partir del propio modelo
+creado anteriomente por \(\mathbb{R}\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo    }\CommentTok{\# Información del modelo}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Coefficients:
+## (Intercept)            X  
+##       4.184       -1.023
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo}\SpecialCharTok{$}\NormalTok{coefficients         }\CommentTok{\# beta0 gorro y beta1 gorro}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (Intercept)           X 
+##    4.184343   -1.022889
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# En modelo$residuals están los residuos}
+\FunctionTok{sum}\NormalTok{(modelo}\SpecialCharTok{$}\NormalTok{residuals}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{/}\NormalTok{(n}\DecValTok{{-}2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.916048
+\end{verbatim}
+
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf}
+
+Incluimos también una gráfica adicional usando la librería
+\emph{ggplot2} e incluyendo la región o intervalo de confianza para los
+datos al nivel del 99\%:
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf}
+
+\hypertarget{ejercicio-3}{%
+\subsection{Ejercicio 3}\label{ejercicio-3}}
+
+\textit{Calcula los intervalos de confianza para los parámetros del modelo de nivel 99%.
+Interpreta los resultados obtenidos.} En el siguiente apartado, En
+primer lugar, establecemos el nivel de significación \(\alpha\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alfa }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}} \FloatTok{0.99}
+\end{Highlighting}
+\end{Shaded}
+
+A continuación, hallamos los intervalos para El pivote es ((PASAR A
+LATEX)) beta0.gorro -
+beta0/(sqrt(var.gorro\emph{(1/n+mX\^{}2/(n}var.X))) que es una T de
+Student con n-2 grados de libertad
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta0.cuantil }\OtherTok{\textless{}{-}} \FunctionTok{qt}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{alfa}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{df=}\NormalTok{n}\DecValTok{{-}2}\NormalTok{); beta0.cuantil}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.618137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta0.extremoinferior }\OtherTok{\textless{}{-}}\NormalTok{ beta0.gorro }\SpecialCharTok{{-}}\NormalTok{ beta0.cuantil }\SpecialCharTok{*} \FunctionTok{sqrt}\NormalTok{(var.error }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1}\SpecialCharTok{/}\NormalTok{n }\SpecialCharTok{+}\NormalTok{ mX}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{var.X)))}
+\NormalTok{beta0.extremosuperior }\OtherTok{\textless{}{-}}\NormalTok{ beta0.gorro }\SpecialCharTok{+}\NormalTok{ beta0.cuantil }\SpecialCharTok{*} \FunctionTok{sqrt}\NormalTok{(var.error }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1}\SpecialCharTok{/}\NormalTok{n }\SpecialCharTok{+}\NormalTok{ mX}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{var.X)))}
+\NormalTok{beta0.IC }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(beta0.extremoinferior, beta0.extremosuperior); beta0.IC}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.771852 4.596833
+\end{verbatim}
+
+El pivote es ((PASAR A LATEX)) pivote beta1.gorro -
+beta1/sqrt(var.gorro/ (var.X * n)) que es una T de Student con n-2
+grados de libertad
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta1.cuantil }\OtherTok{\textless{}{-}}\NormalTok{ beta0.cuantil}
+\NormalTok{beta1.extremoinferior }\OtherTok{\textless{}{-}}\NormalTok{ beta1.gorro }\SpecialCharTok{{-}}\NormalTok{ beta1.cuantil}\SpecialCharTok{*}\FunctionTok{sqrt}\NormalTok{(var.error}\SpecialCharTok{/}\NormalTok{(var.X }\SpecialCharTok{*}\NormalTok{ n))}
+\NormalTok{beta1.extremosuperior }\OtherTok{\textless{}{-}}\NormalTok{ beta1.gorro }\SpecialCharTok{+}\NormalTok{ beta1.cuantil}\SpecialCharTok{*}\FunctionTok{sqrt}\NormalTok{(var.error}\SpecialCharTok{/}\NormalTok{(var.X }\SpecialCharTok{*}\NormalTok{ n))}
+\NormalTok{beta1.IC }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(beta1.extremoinferior, beta1.extremosuperior); beta1.IC}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -1.1033105 -0.9424673
+\end{verbatim}
+
+El pivote para la varianza del error será ((PASAR A LATEX)) pivote
+-\textgreater{} (n-2)*var.error\textsuperscript{2/varianzaerror}2 que es
+una chi-cuadrado con n-2 grados de libertad
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var.error.cuantilinferior }\OtherTok{\textless{}{-}} \FunctionTok{qchisq}\NormalTok{(alfa}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{df=}\NormalTok{n}\DecValTok{{-}2}\NormalTok{)}
+\NormalTok{var.error.cuantilsuperior }\OtherTok{\textless{}{-}} \FunctionTok{qchisq}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{alfa}\SpecialCharTok{/}\DecValTok{2}\NormalTok{, }\AttributeTok{df=}\NormalTok{n}\DecValTok{{-}2}\NormalTok{)}
+\NormalTok{var.error.extremoinferior }\OtherTok{\textless{}{-}}\NormalTok{ (n}\DecValTok{{-}2}\NormalTok{)}\SpecialCharTok{*}\NormalTok{var.error}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{var.error.cuantilsuperior}
+\NormalTok{var.error.extremosuperior }\OtherTok{\textless{}{-}}\NormalTok{ (n}\DecValTok{{-}2}\NormalTok{)}\SpecialCharTok{*}\NormalTok{var.error}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{var.error.cuantilinferior}
+\NormalTok{var.error.IC }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(var.error.extremoinferior, var.error.extremosuperior); var.error.IC}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6138273 1.2048240
+\end{verbatim}
+
+Pero también podemos utilizar las funciones de R para hacerlo de forma
+automática: - IC para beta0 y beta1 asumiendo que la varianza es
+desconocida
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confint}\NormalTok{(modelo, }\AttributeTok{level=}\FloatTok{0.99}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                 0.5 %     99.5 %
+## (Intercept)  3.771852  4.5968334
+## X           -1.103311 -0.9424673
+\end{verbatim}
+
+No hay una automatización del cálculo de la varianza del error
+
+\hypertarget{ejercicio-4}{%
+\subsection{Ejercicio 4}\label{ejercicio-4}}
+
+\textit{Realiza los contrates de significación asociados al intercepto y a la pendiente del
+modelo de regresión considerado. Interpreta los resultados obtenidos. En base a
+los resultados obtenidos, ¿tendría sentido considerar otro modelo más sencillo?}
+A continuación, realizaremos los contrastes de significación sobre el
+modelo con el objetivo de determinar si el modelo se podría simplificar
+a uno con menos variables o no. En primer lugar, realizaremos el
+contraste de forma manual a partir de los estadísticos de contraste
+basado en el pivote de la estimaciones puntuales previas:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Contraste de significacion para beta0}
+\NormalTok{beta0.t }\OtherTok{\textless{}{-}} \FunctionTok{abs}\NormalTok{(beta0.gorro) }\SpecialCharTok{/}\NormalTok{ (}\FunctionTok{sqrt}\NormalTok{(var.error }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1}\SpecialCharTok{/}\NormalTok{n }\SpecialCharTok{+}\NormalTok{ mX}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{var.X)))); beta0.t}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 26.55861
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta1.t }\OtherTok{\textless{}{-}} \FunctionTok{abs}\NormalTok{(beta1.gorro) }\SpecialCharTok{/}\NormalTok{ (sd.error }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(n}\SpecialCharTok{*}\NormalTok{var.X)); beta1.t}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 33.30029
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Rechazamos la hipótesis nula de que el modelo tiene origen de 0}
+\NormalTok{beta0.t }\SpecialCharTok{\textgreater{}}\NormalTok{ beta0.cuantil }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Rechazamos la hipótesis nula de que el modelo no tiene pendiente}
+\NormalTok{beta1.t }\SpecialCharTok{\textgreater{}}\NormalTok{ beta1.cuantil}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# El p{-}valor es 0 {-}{-}\textgreater{} La hipótesis nula es falsa para cualquier nivel de signif. {-}{-}\textgreater{} El modelo tiene un intercepto distinto de 0}
+\NormalTok{beta0.pvalor }\OtherTok{=} \FunctionTok{dt}\NormalTok{(beta0.t, }\AttributeTok{df=}\NormalTok{n}\DecValTok{{-}2}\NormalTok{); beta0.pvalor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.508369e-51
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# El p{-}valor es 0 {-}{-}\textgreater{} La hipótesis nula es falsa para cualquier nivel de signif. {-}{-}\textgreater{} El modelo tiene una pendiente distinta de 0}
+\NormalTok{beta1.pvalor }\OtherTok{=} \FunctionTok{dt}\NormalTok{(beta1.t, }\AttributeTok{df=}\NormalTok{n}\DecValTok{{-}2}\NormalTok{); beta1.pvalor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.237751e-61
+\end{verbatim}
+
+De esto deducimos que existen pruebas estadísticamente significativas de
+que \(\beta_0 \neq 0\), lo cuál nos indica que el intercepto es distinto
+de 0. Por otro lado, también existen pruebas de \(\beta_1 \neq 0\), de
+dónde deducimos que realmente la variable explicativa influye en la
+variable respuesta.
+
+Alternativamente, podemos obtener los valores de estos dos contrastes de
+significación y su p-valor a partir de los datos presentes en el modelo
+de R. Para esto, usaremos la función summary:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(modelo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.76465 -0.72493  0.00685  0.71260  2.20924 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  4.18434    0.15755   26.56   <2e-16 ***
+## X           -1.02289    0.03072  -33.30   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9571 on 118 degrees of freedom
+## Multiple R-squared:  0.9038, Adjusted R-squared:  0.903 
+## F-statistic:  1109 on 1 and 118 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+En concreto, los valores relevantes son el t-value y el
+Pr(\textgreater\textbar t\textbar) de las filas (Intercept) y X que se
+corresponden al valor observado del estadístico observado y su p-valor
+en el contraste sobre el intercepto \(\beta_0\) y la pendiente
+\(\beta_1\). Obtenemos los mismos datos que en el cálculo manual.
+
+En base a los resultados obtenidos anteriormente, decidimos no
+simplificar más nuestro modelo y continuar realizando regresión lineal.
+
+\hypertarget{ejercicio-5}{%
+\subsection{Ejercicio 5}\label{ejercicio-5}}
+
+\textit{Si consideramos que la variable 𝑋𝑋 toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable 𝑌𝑌. Interpreta los resultados obtenidos.}
+
+En este apartado, consideramos 3 nuevos valores para la variable
+explicativa \(X = 2, 4, 6\). Para obtener intervalos de confianza para
+la media de Y condicionada a estos valores y de predicción, es necesario
+comprobar primero que estos datos están dentro del rango de observación
+de X. Esto es debido a que no sabemos como se comporta el modelo fuera
+del rango observado, y nuestro objetivo es predecir y no extrapolar.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nuevosValores }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{)}
+\CommentTok{\# El rango está contenido}
+\FunctionTok{min}\NormalTok{(X) }\SpecialCharTok{\textless{}} \FunctionTok{min}\NormalTok{(nuevosValores) }\SpecialCharTok{\&\&} \FunctionTok{max}\NormalTok{(X) }\SpecialCharTok{\textgreater{}} \FunctionTok{max}\NormalTok{(nuevosValores)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Construimos un data.frame  con los nuevos datos ya que predict necesita este formato para sus predicciones}
+\NormalTok{nuevosDatos }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\StringTok{"X"} \OtherTok{=}\NormalTok{ nuevosValores)}
+\end{Highlighting}
+\end{Shaded}
+
+Habiendo realizado esta comprobación, ya podemos obtener los intervalos
+utilizando la función predict sobre el modelo de R. Obtendremos ambos
+intervalos para los niveles de significación 0.95 y 0.99. ((TODO:
+REVISAR, ESTOS ESTÁN BIEN PERO DEBERÍAN SER CONSISTENTES CON OTRAS
+PARTES DONDE COJAMOS ALFAS ARBITRARIOS))
+
+En primer lugar, pasando el argumento
+\(\texttt{interval = "confidence"}\) obtenemos los asociados a la media
+condicionada.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{predict}\NormalTok{(modelo, }\AttributeTok{newdata =}\NormalTok{ nuevosDatos, }\AttributeTok{interval =} \StringTok{"confidence"}\NormalTok{, }\AttributeTok{level=}\FloatTok{0.95}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           fit       lwr        upr
+## 1  2.13856482  1.917271  2.3598582
+## 2  0.09278705 -0.080999  0.2665731
+## 3 -1.95299072 -2.155557 -1.7504246
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{predict}\NormalTok{(modelo, }\AttributeTok{newdata =}\NormalTok{ nuevosDatos, }\AttributeTok{interval =} \StringTok{"confidence"}\NormalTok{, }\AttributeTok{level=}\FloatTok{0.99}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           fit        lwr        upr
+## 1  2.13856482  1.8459908  2.4311389
+## 2  0.09278705 -0.1369772  0.3225513
+## 3 -1.95299072 -2.2208054 -1.6851761
+\end{verbatim}
+
+Y para obtener los intervalos de predicción, los cuáles serán más
+amplios que los anteriores, pasamos el argumento
+\(\texttt{interval = "prediction"}\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{predict}\NormalTok{(modelo, }\AttributeTok{newdata =}\NormalTok{ nuevosDatos, }\AttributeTok{interval =} \StringTok{"prediction"}\NormalTok{, }\AttributeTok{level=}\FloatTok{0.95}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           fit        lwr         upr
+## 1  2.13856482  0.2303633  4.04676635
+## 2  0.09278705 -1.8104901  1.99606420
+## 3 -1.95299072 -3.8591112 -0.04687022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{predict}\NormalTok{(modelo, }\AttributeTok{newdata =}\NormalTok{ nuevosDatos, }\AttributeTok{interval =} \StringTok{"prediction"}\NormalTok{, }\AttributeTok{level=}\FloatTok{0.99}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           fit        lwr       upr
+## 1  2.13856482 -0.3842867 4.6614163
+## 2  0.09278705 -2.4235539 2.6091280
+## 3 -1.95299072 -4.4730909 0.5671095
+\end{verbatim}
+
+\hypertarget{ejercicio-6}{%
+\subsection{Ejercicio 6}\label{ejercicio-6}}
+
+TODO
+
+\hypertarget{ejercicio-7}{%
+\subsection{Ejercicio 7}\label{ejercicio-7}}
+
+Las técnicas de inferencia empleadas hasta el momento son ciertas bajo
+el supuesto de que las 4 hipótesis del modelo de regresión lineal simple
+(linealidad, homocedasticidad, normalidad e independencia) se verifican.
+De lo contrario, no todas las interpretaciones obtenidas seguirían
+siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de
+homocedasticidad, normalidad e independencia, los intervalos de
+confianza que hemos obtenido no serían válidos.
+
+\hypertarget{linealidad}{%
+\subsubsection{Linealidad}\label{linealidad}}
+
+En primer lugar, podemos tratar de aventurar si se los datos siguen una
+tendencia lineal. Emplearemos una aproximación exploratoria, a través de
+una interpretación gráfica. Para ello, revisitemos la representación
+previamente definida.
+
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf}
+
+Vemos que los puntos parecen distribuirse en torno a la recta de forma
+lineal. Si bien hay datos un tanto atípicos, especialmente en los
+extremos, esto no es lo suficientemente significativo como para rechazar
+la hipótesis. Tampoco se ve un patrón evidente en los datos (es esto lo
+que debemos tratar de detectar, y no solo corroborar que haya el mismo
+número de puntos por encima/debajo de la recta, que no es suficiente
+como para indicar linealidad).
+
+Nótese que aunque se puede apreciar una menor concentración de puntos
+para valores de X comprendidos alrededor del valor 4, esto no es
+indicativo de una falta de linealidad. Dado que trabajamos bajo diseño
+fijo, se tiene que achacar a decisiones sobre las condiciones de
+medición o al propio diseño del experimento. Esta observación se puede
+comprobar a través del siguiente cuadro:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Representamos el número de valores de X en cada intervalo de longitud 0.5, comenzando desde el mayor entero menor}
+\CommentTok{\# o igual que el dato mínimo, y finalizando en el menor entero mayor o igual que el dato máximo.}
+\FunctionTok{table}\NormalTok{(}\FunctionTok{cut}\NormalTok{(X, }\AttributeTok{breaks=}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\FunctionTok{floor}\NormalTok{(}\FunctionTok{min}\NormalTok{(X)), }\AttributeTok{to=}\FunctionTok{ceiling}\NormalTok{(}\FunctionTok{max}\NormalTok{(X)), }\AttributeTok{by=}\FloatTok{0.5}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  (0,0.5]  (0.5,1]  (1,1.5]  (1.5,2]  (2,2.5]  (2.5,3]  (3,3.5]  (3.5,4] 
+##        9        4       11        9        8        8       13        2 
+##  (4,4.5]  (4.5,5]  (5,5.5]  (5.5,6]  (6,6.5]  (6.5,7]  (7,7.5]  (7.5,8] 
+##        1        4       11        3        6        4        4        5 
+##  (8,8.5]  (8.5,9]  (9,9.5] (9.5,10] 
+##        5        5        6        2
+\end{verbatim}
+
+Con el objetivo de realizar una prueba más precisa, planteamos el
+siguiente contraste de hipótesis. Como hipótesis nula tenemos que la
+variable respuesta siga el modelo lineal simple que hemos estado
+considerando, y como hipótesis nula, que siga un modelo parabólico,
+donde hay dependencia de la variable explicativa al cuadrado: \[
+\begin{cases}
+H_0: Y=\beta_0+\beta_1X+\epsilon\\
+H_a: Y=\beta_0+\beta_1X+\beta_2*X^2\epsilon
+\end{cases}
+\]
+
+Ejecutamos la prueba:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Empleamos power = 2 porque estamos considerando una alternativa cuadrática}
+\FunctionTok{resettest}\NormalTok{(modelo, }\AttributeTok{power =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  RESET test
+## 
+## data:  modelo
+## RESET = 0.09269, df1 = 1, df2 = 117, p-value = 0.7613
+\end{verbatim}
+
+Vemos que el p-valor es de 0.7613. INTERPRETAR.
+
+No obstante, este contraste solo nos ha aportado información sobre la
+equiparación con un modelo cuadrático. Si buscáramos una confirmación
+perfecta, teórica, deberíamos seguir contrastando con todos los valores
+de power. Dado que esto es impracticable experimentalmente, podemos
+plantearnos en su lugar un contraste más general, con una alternativa no
+parámetrica: \[
+\begin{cases}
+H_0: Y=\beta_0+\beta_1X+\epsilon\\
+H_a: Y=m(X)+\epsilon
+\end{cases}
+\]
+
+Haciendo uso del paquete \emph{sm}, realizamos la prueba de hipótesis:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Importamos rpanel para abrir un panel interactivo para la representación}
+\CommentTok{\# Los valores que sabemos interpretar son los que aparecen con las opciones por defecto}
+\CommentTok{\# Indicamos test=T para que se nos muestre un p{-}valor.}
+\FunctionTok{sm.regression}\NormalTok{(X, Y, }\AttributeTok{model=}\StringTok{"linear"}\NormalTok{, }\AttributeTok{panel=}\NormalTok{T, }\AttributeTok{test=}\NormalTok{T)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf}
+
+La interpretación de la figura resultante es la siguiente. Con una línea
+negra nos aparece marcada una estimación no paramétrica de la regresión
+(sin asumir linealidad), y en azul, una región de confianza para el
+modelo lineal simple. Vemos que la línea negra se encuentra siempre
+dentro de la región azul. Por tanto, podemos asumir que la hipótesis
+nula es cierta, esto es, que los datos verifican la hipótesis de
+linealidad. FALTA ANALIZAR EL P-VALOR
+
+\hypertarget{homocedasticidad}{%
+\subsubsection{Homocedasticidad}\label{homocedasticidad}}
+
+Contrapongamos ahora los residuos del modelo a la variable explicativa.
+Se muestra también el diagrama de dispersión original:
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf}
+
+Queremos comprobar ahora si la varianza del error, \(\sigma^2\), es la
+misma independientemente del valor que tome la variable explicativa.
+Vemos que la distribución de los residuos en el diagrama no sigue un
+patrón evidente, y que su desviación con respecto a la recta \(x=0\)
+parece ser la misma sin importar el intervalo de X considerado.
+
+Tampoco sobre el diagrama de dispersión de la variable respuesta
+observamos una tendencia significativa acera de las desviaciones con la
+recta de regresión. En conjunción con lo anterior, podríamos aventurar,
+a primera vista, que los datos muestrales son verdaderamente
+homocedásticos.
+
+Sí destacamos que la interpretación para la región central, en
+aproximadamente \((4, 4.5)\), puede no ser muy precisa, por falta de
+datos. Sin embargo, esto no basta para desmentir la hipótesis de
+homocedasticidad.
+
+Para tener una confirmación precisa, nos planteamos el siguiente
+contraste de hipótesis: \[
+\begin{cases}
+H_0: \text{modelo homocedástico}\\
+H_a: \text{modelo heterocedástico}
+\end{cases}
+\]
+
+Ejecutamos un test de Harrison-McCabe con R, haciendo uso del
+previamente cargado paquete \emph{lmtest}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hmctest}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\NormalTok{X)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Harrison-McCabe test
+## 
+## data:  Y ~ X
+## HMC = 0.55113, p-value = 0.807
+\end{verbatim}
+
+El p-valor es de 0.763.
+
+\hypertarget{normalidad}{%
+\subsubsection{Normalidad}\label{normalidad}}
+
+Para corroborar que el error tiene distribución normal, haremos varias
+representaciones gráficas que nos permitan intuir si la hipótesis se
+ajusta a los datos. Trabajaremos con los residuos estandarizados, pues
+no tienen la misma varianza y la correlación entre cada 2 de ellos puede
+ser distinta (provienen de distribuciones diferentes).
+
+Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el
+cual necesitamos la librería \emph{car}), aunque centraremos nuestra
+atención en el último de ellos, el más relevante en lo que concierne al
+estudio de la normalidad.
+
+\includegraphics{PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf}
+
+\begin{verbatim}
+## [1] 93 45
+\end{verbatim}
+
+En el histograma podemos apreciar una cierta asimetría hacia la derecha
+(valores más altos). En el boxplot o diagrama de caja vemos que la media
+está centrada en el centro de la caja, un buen indicador. No obstante,
+la cola izquierda es de una longitud ligeramente mayor, lo cual es
+indicativo de la asimetría mencionada, al estar los datos más
+concentrados alrededor de valores más altos.
+
+El QQPlot o diagrama cuantil-cuantil nos presenta una comparativa entre
+los cuantil muestrales de los residuos estandarizados y los cuantiles
+teóricos de una normal estándar. Si los residuos estandarizados
+presentaran una distribución normal de media 0 y varianza 1, se
+situarían alrededor de la recta diagonal resaltada. En nuestro caso,
+vemos que en la zona central el ajuste es bueno, pero hay una cierta
+desviación en las colas. Esto es especialmente notorio en la superior,
+donde los cuantiles muestrales son algo inferiores a los cuantiles
+teóricos de una normal, que es lógico y coherente con la asimetría
+indicada anteriormente.
+
+Ahora bien, una representación visual es solamente un apoyo al estudio,
+y no podemos inferir de ella una conclusión estadísticamente
+definitoria. Para ello , emplearemos directamente un test de bondad de
+ajuste sobre los errores estandarizados con respecto a una distribución
+normal. Aunque hay varias opciones adecuadas, como el test de
+Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado
+con este propósito es el test de Shapiro-Wilk, especialmente diseñado
+para contrastes de normalidad:
+
+\[
+\begin{cases}
+H_0: \epsilon\text{ sigue una distribución normal}\\
+H_a: \epsilon\text{ no sigue una distribución normal}
+\end{cases}
+\]
+
+Ejecutemos pues el contraste de especificación mencionado:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{shapiro.test}\NormalTok{(residuos.estan)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuos.estan
+## W = 0.98768, p-value = 0.3518
+\end{verbatim}
+
+También podemos comprobar los resultados de otros tests:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{ }\AlertTok{FIXME}
+\CommentTok{\# el argumento y esta ausente}
+\CommentTok{\# ks.test(residuos.estan)}
+\FunctionTok{lillie.test}\NormalTok{(residuos.estan)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Lilliefors (Kolmogorov-Smirnov) normality test
+## 
+## data:  residuos.estan
+## D = 0.057751, p-value = 0.4207
+\end{verbatim}
+
+Una observación adicional: en este caso, tenemos que el tamaño de la
+muestra, n, es mayor que 30, de modo que se pueden despreciar las
+impurezas debidas a utilizar los residuos en el estudio de la
+normalidad, en lugar de los errores (que no están sujetos a la
+aplicación del ajuste de mínimos cuadrados).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{n}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 120
+\end{verbatim}
+
+\hypertarget{independencia}{%
+\subsubsection{Independencia}\label{independencia}}
+
+De entre las 4 hipótesis con las que trabaja el modelo, la independencia
+de los errores es la más difícil de corroborar. No tenemos información
+acerca del proceso de recogida de muestras, por lo que no podemos
+garantizarla en base a que los datos hayan sido medidos sobre objetos o
+individuos de forma independiente.
+
+Debido a la complejidad inherente a este apartado, nos limitaremos a
+comprobar la independencia temporal. Para ello, asumiremos que nuestros
+datos han sido medidos a lo largo del tiempo.
+
+Nos preguntamos entonces si existe algún tipo de relación entre las
+observaciones, esto es: \[
+\begin{cases}
+H_0: \epsilon\text{ son incorrelacionados}\\
+H_a: \epsilon\text{ son correlacionados de orden k}
+\end{cases}
+\] En el contraste planteado, \(k\in\mathbb{N}\), \(k>1\), es el
+retardo, esto es, la separación entre los instantes de tiempo que
+influyen sobre el instante actual. Así, fijado un k y dados unos errores
+\$\$
+
+\end{document}
