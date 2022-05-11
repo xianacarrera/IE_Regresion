@@ -8,18 +8,6 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 options(tinytex.verbose = TRUE)
 ```
-TODO BORRAR EJEMPLO TABLAS
-
-\begin{center}
-\begin{tabular}{ |c c c| }
- \hline
- celda1 & celda2 & celda3 \\
- \hline
- celda4 & celda5 & celda6 \\  
- celda7 & celda8 & celda9 \\   
-  \hline
-\end{tabular}
-\end{center}
 
 # Introducción
 En este documento se describe y documenta el ajuste y análisis de un modelo de regresión lineal simple en base a los datos proporcionados para una variable explicativa X y una variable respuesta Y.  
@@ -35,15 +23,15 @@ Consideraremos una muestra extraída bajo diseño fijo, esto es, con datos $(x_1
 
 Así, tendremos
 $$
-Y_i = \beta_0 + \beta_ 1*x_i + \epsilon_i  \quad \text{para}\; i \in {1,...,n}
+Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i  \quad \text{para}\; i \in {1,...,n}
 $$
 donde $\epsilon_1,...,\epsilon_n \in N(0, \sigma^2)$ y son independientes.
 
 
-Este modelo presenta 3 parámetros: \beta_0
+Este modelo presenta 3 parámetros: $\beta_0$, el valor inicial de la media de la variable respuesta cuando X es 0 (es decir, la ordenada en el origen de la recta); $\beta_1$, la cantidad en la que crece dicha media cada vez que X se incrementa en una unidad (la pendiente); y $\sigma^2$, la varianza del error (por hipótesis de homocedasticidad, toma un valor fijo para cualquier valor x de la variable explicativa).
  
 # Cuestiones preliminares 
-En cada una de las secciones del documento se trabajará con $\textbf{\alpha = 0.01}$ para los distintos contrastes, intervalos de confianza, etc. planteados. Equivalentemente, se empleará un nivel de significación $1 - \alpha = 0.99$. 
+En cada una de las secciones del documento se trabajará con \textbf{$\alpha = 0.01$} para los distintos contrastes, intervalos de confianza, etc. planteados. Equivalentemente, se empleará un nivel de significación $1 - \alpha = 0.99$. 
 ```{r alfa}
 alfa <- 1 - 0.99; alfa
 conf.level <- 1 - alfa; conf.level
@@ -58,12 +46,12 @@ Cargamos a continuación todas las librerías que utilizaremos a lo largo de la 
 ```{r librerias}
 # install.packages("paquete_de_ejemplo")
 library(ggplot2)      # Para diagrama de dispersión con región de confianza
-library(lmtest)
-library(sm)
-library(rpanel)   
-library(viridis)      # Para gradiente de colores en gráfica de normalidad
+library(rpanel)       # Controles adicionales en sm.regression
+library(viridis)      # Gradiente de colores en el histograma
 library(nortest)      # Necesario para lillie.test
 library(car)          # Necesario para QQPlot
+library(sm)           # Contraste no paramétrico de linealidad
+library(lmtest)       # Test de Harrison-McCabe (contraste de homocedasticidad)
 ```
 
 ## Lectura de datos
@@ -96,12 +84,19 @@ class(datos)
 # Comprobamos la estructura de los datos
 str(datos)
 
-# Y realizamos un pequeño análisis estadístico
-summary(datos)
-
 # Seleccionamos las dos variables de interés
 X <- datos[,"X"]
 Y <- datos[,"Y47"]
+
+# Y realizamos un pequeño análisis estadístico exploratorio
+summary(datos)
+par(mfrow=c(1,2))     # Gráficos dispuestos en 1 fila con 2 columnas
+hist(Y, col=viridis(7), main="Histograma de la variable respuesta")
+rug(Y)
+boxplot(Y, col="gray", main="Diagrama de caja de la variable respuesta")
+par(mfrow=c(1,1))     # Reiniciamos al valor predeterminado para las ventanas gráficas
+
+
 
 # Guardamos el número de datos
 n <- length(Y)
@@ -117,8 +112,8 @@ $$
 Debemos tener en cuenta que R calcula la covarianza como una 'cuasi'covarianza, es decir, dividiendo entre $n-1$ en lugar de entre $n$. Para corregirlo, multiplicamos por $n-1$ y dividimos entre $n$, aunque también mostraremos el valor original. No afectará al coeficiente de correlación, pues el denominador se anula con los $\sqrt{n-1}$ de las cuasidesviaciones típicas.
 
 ```{r cov}
-covar = cov(X,Y)*(n-1)/n; covar           # Covarianza
-cov(X,Y)                                  # Cuasicovarianza
+covar = cov(X,Y) * (n - 1) / n; covar     # Covarianza
+cov(X, Y)                                 # Cuasicovarianza
 cor(X, Y)                                 # Coeficiente de correlación
 ```
 Que la covarianza sea distinta de 0 nos indica que hay una relación lineal. Además, al ser negativa, deducimos que esta es indirecta/inversa, es decir, que al aumentar la variable X, la variable Y diminuye. 
@@ -176,95 +171,148 @@ y obtenemos un intercepto $\beta_0 = 4.184$ y una pendiente de $\beta_1 = -1.023
 
 En los siguientes ejercicios, analizaremos en profundidad diferentes caracteríssticas de este modelo y obtendremos inferencia a partir del mismo. Nótese que para que las conclusiones extraídas en estos ejercicios tengan validez, deberemos suponer que se cumplen las hipótesis de linealidad, homocedasticidad y normalidad e independencia de los errores. Las comprobaremos de forma precisa en el ejercicio 7, pero de no ser válida alguna de ellas, tendríamos que revisar y descartar multitud de resultados.
 
-## Ejercicio 2
-### Estimación puntual a mano
-Para la estimación puntual de los parámetros intercepto $\beta_0$, pendiente
-$beta_1$ y varianza del error $\sigma^2$ podemos aplicar directamente las fórmulas
-obtenidas en la parte teórica de la asignatura:
+## 2) Estimaciones puntuales de los parámetros y representación del modelo
+Para la estimación puntual de los parámetros intercepto $\beta_0$, pendiente $beta_1$ y para la de la varianza del error $\sigma^2$ podemos aplicar directamente las fórmulas obtenidas en la parte teórica de la asignatura:
+
+\begin{gather*}
+\hat{\beta_0} = \frac{\overline{Y}} - \frac{S_{xY}}{s^2_x}\overline{x}
+\hat{\beta_1} = \frac{S_{xY}}{s^2_x}
+\hat{\sigma^2} = \frac{1}{n-2} \cdot \sum_{1}^{n} (Y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2
+\end{gather*}
+
+Veamos a través de R cuáles son sus valores:
+
 ```{r estpuntmano}
-var.X <- var(X)*(n-1)/n
-beta0.gorro = mY - covar*mX/var.X; beta0.gorro
-beta1.gorro = covar/var.X; beta1.gorro
-var.error = sum((Y - beta0.gorro - beta1.gorro*X)^2)/(n-2); var.error
-sd.error = sqrt(var.error); sd.error
+var.X <- var(X)*(n-1)/n           # Obtenemos la varianza multiplicando la cuasivarianza por (n-1)/n
+beta0.gorro <- mY - covar*mX/var.X; beta0.gorro
+beta1.gorro <- covar/var.X; beta1.gorro
+var.error <- sum((Y - beta0.gorro - beta1.gorro*X)^2)/(n-2); var.error
+sd.error <- sqrt(var.error); sd.error      # Vemos también el valor estimado de la desviación típica del error
 ```
 
-### Estimación puntual automática
-De manera alternativa, podemos obtenerlas a partir del propio modelo creado anteriomente por $\mathbb{R}$:
+De manera alternativa, podemos obtenerlas a partir del propio modelo creado anteriomente por R:
 ```{r estpuntauto}
 modelo
 # Intercepto beta0gorro y pendiente beta1gorro
 modelo$coefficients
-# En modelo$residuals están los residuos
-sum(modelo$residuals^2)/(n-2)
+# Varianza del error
+sum(modelo$residuals^2) / (n - 2)
 ```
 
+En el código anterior hemos utilizado \texttt{modelo$residuals} para obtener los residuos del modelo (los errores de predicción):
+$$
+\hat\epsilon_i = Y_i - \hat\beta_0 - \hat\beta_1x_i \quad \text{para} \; i \in {1,...,n},
+$$
+así como la expresión alternativa de la varianza del error:
+$$
+\hat{\sigma^2} = \frac{1}{n-2} \cdot \sum_{1}^{n} \hat\epsilon_i^2
+$$
 
+Vemos que nuestros cálculos coinciden con los obtenidos por R, ya que las fórmulas empleadas son las mismas.
+
+A continuación, en base a la representación definida anteriormente, añadimos la recta de regresión ajustada del modelo:
 ```{r dispersionReg, echo=FALSE}
-representar()
-abline(modelo, col="red", lwd=2)
+representar()             # Llamamos a la función que crea el diagrama de dispersión de Y sobre X
+abline(modelo, col="red", lwd=2)        # Añadimos la recta de regresión
 ```
 
 Incluimos también una gráfica adicional usando la librería _ggplot2_ e incluyendo la región
-o intervalo de confianza para los datos al nivel del 99%:
+o intervalo de confianza para los datos al nivel fijado del 99%:
 ```{r dispersionRegGGPLOT, echo=FALSE}
 p3 <- ggplot(datos, aes(x=X, y=Y)) +
   geom_point() +
   geom_smooth(formula=y~x, level=0.99, method=lm, color="red", fill="#666666", se=TRUE) + 
   labs(y = "Variable respuesta",
        x = "Variable explicativa",
-       title = "Modelo lineal simple, con región de confianza al 95%")
+       title = "Modelo lineal simple, con región de confianza al 99%")
 p3
 ```
 
-## Ejercicio 3
-\textit{Calcula los intervalos de confianza para los parámetros del modelo de nivel 99%.
-Interpreta los resultados obtenidos.}
+## 3) Intervalos de confianza de los parámetros del modelo
 
-A continuación, hallamos los intervalos para
-El pivote es ((PASAR A LATEX)) beta0.gorro - beta0/(sqrt(var.gorro*(1/n+mX^2/(n*var.X))) que es una
-T de Student con n-2 grados de libertad
+A continuación, hallamos sendos intervalos de confianza para $\beta_0$, $\beta_1$ y $\sigma^2$. Todos estos se harán para el nivel de significación $\alpha = 0.01$ definido previamente.
 
+### $\beta_0$
+El pivote que emplearemos para esta estimación será
+$$
+\frac{\hat\beta_0 - beta0}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n_2}
+$$
+de modo que el intervalo de confianza será:
+$$
+(\hat\beta_0-t_{n-2,\frac{\alpha}{2}} \hat\sigma \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}}, \hat\beta_0+t_{n-2,\frac{\alpha}{2}} \hat\sigma \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}})
+$$
+dónde $t_{n-2,\frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2} = 0.995$ de una T de Student con $n-2= 118$ grados de libertad.
+
+En primer lugar, obtengamos el intervalo de confianza a mano:
 ```{r icbeta0mano}
-beta0.cuantil <- qt(1-alfa/2, df=n-2); beta0.cuantil
+beta0.cuantil <- qt(1-alfa/2, df=n-2); beta0.cuantil       # Cuantil 1-alfa/2 de T de Student con n-2 grados de libertad
 beta0.extremoinferior <- beta0.gorro - beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
 beta0.extremosuperior <- beta0.gorro + beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
-beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC
+beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC      # Intervalo de confianza
 ```
+Interpretamos que, en base a los datos de esta muestra, el intervalo $(3.771852, 4.596833)$ contendrá al parámetro $\beta_0$ con una probabilidad del 99%.
 
-El pivote es ((PASAR A LATEX)) pivote beta1.gorro - beta1/sqrt(var.gorro/ (var.X * n)) que es una
-T de Student con n-2 grados de libertad
+### $\beta_1$
+Para el intervalo de confianza de la pendiente, usaremos ahora el pivote
+$$
+\frac{\hat{\beta_1} - \beta_1}{\hat\sigma / {S_x \sqrt{n}}} \in T_{n-2}
+$$
 
+a partir del cuál obtenemos el intervalo:
+$$
+(\hat\beta_1 - t_{n-2, \frac{\alpha}{2}}\frac{\hat{\sigma}}{S_x \sqrt{n}}, \hat\beta_1 + t_{n-2, \frac{\alpha}{2}}\frac{\hat\sigma}{S_x \sqrt{n}})
+$$
 
+donde de nuevo $t_{n-2,\frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2} = 0.995$ de una T de Student con $n-2= 118$ grados de libertad.
+
+De nuevo, obtenemos el intervalo a mano:
 ```{r icbeta1mano}
-beta1.cuantil <- beta0.cuantil
-beta1.extremoinferior <- beta1.gorro - beta1.cuantil*sqrt(var.error/(var.X * n))
-beta1.extremosuperior <- beta1.gorro + beta1.cuantil*sqrt(var.error/(var.X * n))
-beta1.IC <- c(beta1.extremoinferior, beta1.extremosuperior); beta1.IC
+beta1.cuantil <- beta0.cuantil      # Empleamos el mismo cuantil, dado que fijamos el mismo alfa
+beta1.extremoinferior <- beta1.gorro - beta1.cuantil * sqrt(var.error / (var.X * n))
+beta1.extremosuperior <- beta1.gorro + beta1.cuantil * sqrt(var.error / (var.X * n))
+beta1.IC <- c(beta1.extremoinferior, beta1.extremosuperior); beta1.IC   # Mostramos el intervalo
 ```
+Interpretamos así que, en base a los datos de esta muestra, el intervalo $(-1.1033105, -0.9424673)$ contendrá al parámetro $\beta_1$ con una probabilidad del 99%.
+-1.1033105 -0.9424673
 
-El pivote para la varianza del error será ((PASAR A LATEX))
-pivote -> (n-2)*var.error^2/varianzaerror^2 que es una chi-cuadrado con n-2
-grados de libertad
+### $\sigma^2$
+Por último, para el intervalo de confianza de la varianza del error, usaremos 
+
+$$
+\frac{(n-2)\hat{sigma^2}}{\sigma^2} \in \chi^2_{n-2}
+$$
+de dónde obtenemos el intervalo:
+$$
+(\frac{(n-2)\hat{\sigma^2}}{\chi^2_{n-2, \frac{\alpha}{2}}}, \frac{(n-2)\hat{\sigma^2}}{\chi^2_{n-2, 1-\frac{\alpha}{2}}})
+$$
+
+
+donde $\chi^2_{n-2, \frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2}=0.995$ de una $\chi^2$ con $n-2=118$ grados de libertad, y $\chi^2_{n-2, 1-\frac{\alpha}{2}}$ es el cuantil $\frac{\alpha}{2}=0.005$ de una $\chi^2$ con $n-2=118$ grados de libertad.
+
+Calculamos entonces este intervalo a mano:
 ```{r icvarsmano}
-var.error.cuantilinferior <- qchisq(alfa/2, df=n-2)
-var.error.cuantilsuperior <- qchisq(1-alfa/2, df=n-2)
-var.error.extremoinferior <- (n-2)*var.error^2/var.error.cuantilsuperior
-var.error.extremosuperior <- (n-2)*var.error^2/var.error.cuantilinferior
-var.error.IC <- c(var.error.extremoinferior, var.error.extremosuperior); var.error.IC
+var.error.cuantilinferior <- qchisq(alfa/2, df = n-2)       # Cuantil alfa/2 de chi-cuadrado con n-2 grados de libertad
+var.error.cuantilsuperior <- qchisq(1-alfa/2, df = n-2)     # Cuantil 1-alfa/2
+var.error.extremoinferior <- (n-2) * var.error^2 / var.error.cuantilsuperior
+var.error.extremosuperior <- (n-2) * var.error^2 / var.error.cuantilinferior
+var.error.IC <- c(var.error.extremoinferior, var.error.extremosuperior); var.error.IC     # Intervalo
 ```
+Interpretamos así que, en base a los datos de esta muestra, el intervalo $(0.6138273, 1.2048240)$ contendrá al parámetro $\sigma^2$ con una probabilidad del 99%.
 
-Pero también podemos utilizar las funciones de R para hacerlo de forma automática:
-- IC para beta0 y beta1 asumiendo que la varianza es desconocida
+Pero también podemos utilizar las funciones de R para calcular los intervalos de confianza para $\beta_0$ y $\beta_1$ de forma automática:
 ```{r icbeta0beta1}
-confint(modelo, level=0.99)
+# Intervalo de confianza para la ordenada en el origen y la pendiente con nivel del 99% en base al modelo construido
+confint(modelo, level = 0.99)
 ```
 
-No hay una automatización del cálculo de la varianza del error
+Vemos que los valores obtenidos coinciden con los extremos del intervalo que calculábamos anteriormente, pues R emplea la misma construcción que hemos visto de forma teórica.
 
-## Ejercicio 4
+No hay ninguna función estándar para la automatización del intervalo de confianza para la varianza del error.
+
+## 4) Contrastes de significación asociados al intercepto y a la pendiente
 \textit{Realiza los contrates de significación asociados al intercepto y a la pendiente del modelo de regresión considerado. Interpreta los resultados obtenidos. En base a los resultados obtenidos, ¿tendría sentido considerar otro modelo más sencillo?}
-A continuación, realizaremos los contrastes de significación sobre los parámetros $\hat{\beta_0} y \hat{\beta_1}$ con el objetivo de determinar si este se podría simplificar a uno con menos variables o no. Las hipótesis de estos contrastes son, respectivamente:
+
+A continuación, realizaremos los contrastes de significación sobre los parámetros $\hat{\beta_0} y \hat{\beta_1}$ con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no. Las hipótesis de estos contrastes son, respectivamente:
 $$
 \begin{cases}
 H_0: \beta_0 = 0\\
@@ -278,80 +326,90 @@ H_0: \beta_1 = 0\\
 H_a: \beta_1 \neq 0
 \end{cases}
 $$
-En primer lugar, realizaremos los contrastes de forma manual. Esto se hará a partir de los estadísticos de contraste basados en el pivote de las estimaciones puntuales previas:
+
+Si no consiguiéramos demostrar la hipótesis alternativa para el primer contraste, tendríamos que considerar un modelo más sencillo, que no solo facilitaría el análisis estadístico, sino que es más correcto y realista de cara a las interpretaciones que podamos hacer. En el caso del segundo contraste, no demostrar la hipótesis alternativa equivaldría a invalidar nuestro modelo, pues significaría que no hay regresión.
+
+En primer lugar, calculamos los contrastes de forma manual. Esto se hará a partir de los estadísticos de contraste basados en los pivotes empleados para obtener los intervalos de confianza del ejercicio 3, teniendo en cuenta que, bajo las respectivas hipótesis nulas, $\beta_0 = 0$ y $\beta_1 = 0$:
 ```{r signifmano}
-# Contrastes de significación para beta0gorro y beta1gorro
+# Cálculo de los valores de los estadísticos de contraste para beta0 y beta1 bajo H0
 beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1 / n + mX ^ 2 / (n * var.X)))); beta0.t
 beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n * var.X)); beta1.t
+```
+DEFINIR LA REGIÓN DE RECHAZO -_-
+
 # Ambos contrastes caen en la región de rechazo
 beta0.t > beta0.cuantil 
 beta1.t > beta1.cuantil
-# El p-valor del 1º contraste es ~0 -> La hipótesis nula es falsa para cualquier nivel de signif. razonable
-beta0.pvalor = dt(beta0.t, df=n-2); beta0.pvalor
 
-# El p-valor del 2º contraste es ~0 -> La hipótesis nula es falsa para cualquier nivel de signif. razonable 
-beta1.pvalor = dt(beta1.t, df=n-2); beta1.pvalor
+# Calculo de p-valores
+beta0.pvalor <- dt(beta0.t, df = n-2); beta0.pvalor
+beta1.pvalor <- dt(beta1.t, df = n-2); beta1.pvalor
 ```
+Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que noe existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
-De esto deducimos que existen pruebas estadísticamente significativas de que $\beta_0 \neq 0$, lo cuál nos indica que el intercepto es distinto de 0. Por otro lado, también existen pruebas de $\beta_1 \neq 0$, de dónde deducimos que realmente la variable explicativa influye en la variable respuesta. 
+Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^-50$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas para los niveles de significación habituales o incluso con precisiones mucho mayores.
 
 Alternativamente, podemos obtener los valores de estos dos contrastes de significación y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la función summary:
 ```{r signifauto}
 summary(modelo)
 ```
-En concreto, los valores relevantes son el t-value y el Pr(>|t|) de las filas (Intercept) y X que se corresponden al valor observado del estadístico observado y su p-valor en el contraste sobre el intercepto $\beta_0$ y la pendiente $\beta_1$. Obtenemos los mismos datos que en el cálculo manual.
+En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al valor observado del estadístico de contraste y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente.
 
-En base a los resultados obtenidos anteriormente, decidimos no simplificar más nuestro modelo y continuar realizando regresión lineal.
-
-## Ejercicio 5
+## 5) Intervalos de predición y confianza para la media condicionada 
 \textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
 
-En este apartado, consideramos 3 nuevos valores para la variable explicativa $X = 2, 4, 6$. Para obtener intervalos de confianza para la media de Y condicionada a estos valores y de predicción, es necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es debido a que no sabemos como se comporta el modelo fuera del rango observado, y nuestro objetivo es predecir y no extrapolar.
+En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Para obtener intervalos de confianza para la esperanza de Y condicionada a estos valores y de predicción, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.
+
 ```{r validacionnuevosdatos}
-nuevosValores <- c(2, 4, 6)
-nuevosValores
+nuevosValores <- c(2, 4, 6); nuevosValores
 # Los nuevos valores están contenidos dentro del rango observado
 min(X) < min(nuevosValores) && max(X) > max(nuevosValores)
-# Construimos un data.frame  con los nuevos datos ya que predict necesita este formato para sus predicciones
+# Construimos un data.frame  con los nuevos datos ya que predict necesita ese formato
 nuevosDatos = data.frame("X" = nuevosValores)
 ```
-Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función predict sobre el modelo de R. Obtendremos ambos intervalos para los niveles de significación fijado anteriormente $\alfa = 0.99$.
+Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función \texttt{predict} sobre el modelo de R. Obtendremos ambos intervalos para el nivel de significación fijado anteriormente $\alpha = 0.01$.
 
-En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$ obtenemos los asociados a la media condicionada.
+En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$, hallamos los intervalos de confianza asociados a la media condicionada.
 ```{r intmediacond}
 predict(modelo, newdata = nuevosDatos, interval = "confidence", level = alfa)
 ```
-Y para obtener los intervalos de predicción, los cuáles serán más amplios que los anteriores, pasamos el argumento $\texttt{interval = "prediction"}$
+Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de n, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra.
+
+En R, pasamos el argumento $\texttt{interval = "prediction"}$
 ```{r intprediccion}
 predict(modelo, newdata = nuevosDatos, interval = "prediction", level = alfa)
 ```
 ## Ejercicio 6 
 \textit{Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado.}
-El objetivo del cálculo de una medida de bondad de ajuste es determinar como de "bueno" o "potente" es un modelo de regresión. En terminos estadísticos, esto se traduce a cuánta proporción de la variabilidad de $Y$ puede ser explicada por el modelo de regresión. En el caso del modelo lineal, podemos descomponer la varianza como
+El objetivo del cálculo de una medida de bondad de ajuste es determinar como de "bueno" o "potente" es un modelo de regresión. En terminos estadísticos, esto se traduce a cuánta proporción de la variabilidad de $Y$ puede ser explicada por el modelo de regresión. Una de las medidas principales para lograr este objetivo es el \textit{coeficiente de determinación $R^2$}. En el caso del modelo lineal, podemos descomponer la varianza como
+
 $$
 \sigma_Y^2 = 
 \sum_{i=1}^n (Y_i - \overline{Y})^2 = 
-\sum_{i=1}^n (Y_i - \hat{\beta_0} - \hat{\beta_1}*x_i)^2 + 
-\sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}*x_i - \overline{Y})^2
+\sum_{i=1}^n (Y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2 + 
+\sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}\cx_i - \overline{Y})^2
 $$
 
 Dónde observamos que el segundo sumando representa la varianza explicada por la recta de regresión, mientras que el primero representa la no explicada. Es por tanto necesario que el cociente $\frac{RSS}{TSS}$, dónde TSS (\textit{Total Sum of Squares}) es la varianza total de $Y$ y RSS (\textit{Residual Sum of Squares}) es la no explicada por el modelo, sea lo menor posible.
-De esta forma, definimos el coeficiente de determinación $ R^2 = 1 - \frac{RSS}{TSS}$. En primer lugar, calcularemos este cociente a mano:
+Definimos entonces el coeficiente de determinación $R^2 = 1 - \frac{RSS}{TSS}$. En primer lugar, calcularemos este cociente a mano:
 
 ```{r coefdeterman}
 rss = sum((Y - beta0.gorro - beta1.gorro*X)^2); rss
 tss = var(Y)
 r2 = 1 - rss/tss; r2
 ```
-Aunque también podemos obtenerla a partir del modelo de R, en el campo \textit{Adjusted R-Squared}:
+Aunque también podemos obtenerla a partir del modelo de R, en el campo \textit{Adjusted R-Squared} del \texttt{summary}:
 ```{r coefdeterauto}
 summary(modelo)
 ```
-Obtenemos un valor de 0.903, lo cuál nos indica que nuestro modelo es bastante potente en términos habituales. Cabe destacar que el hecho de que el coeficiente de determinación sea alto, no nos indica aún que nuestro modelo sea correcto, lo cuál será discutido en el apartado 7. El recíproco tampoco es cierto, podríamos tener un modelo correcto que no fuera bueno.
+Obtenemos un valor de $0.903$, lo cuál nos indica que nuestro modelo es bastante potente en términos habituales. Cabe destacar que el hecho de que el coeficiente de determinación sea alto, no nos indica aún que nuestro modelo sea correcto, lo cuál será discutido en el apartado 7. El recíproco tampoco es cierto, podríamos tener un modelo correcto que no fuera bueno. Intuitivamente, este valor alto se contrasta con el hecho de que en el diagrama de dispersión los datos sean cercanos a la recta de regresión.
 
 ## Ejercicio 7
-  Las técnicas de inferencia empleadas hasta el momento son ciertas bajo el supuesto de que las 4 hipótesis del modelo de regresión lineal simple (linealidad, homocedasticidad, normalidad e independencia) se verifican. De lo contrario,
-  no todas las interpretaciones obtenidas seguirían siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de homocedasticidad, normalidad e independencia, los intervalos de confianza que hemos obtenido no serían válidos.
+\textit{Completa la validación del modelo de regresión lineal simple, contrastando las cuatro hipótesis básicas asociadas al mismo: linealidad, homocedasticidad, normalidad e independencia. Apoya los resultados obtenidos con representaciones gráficas. En base a los resultados obtenidos, ¿qué puedes decir sobre el modelo de regresión considerado?}
+
+Las técnicas de inferencia empleadas hasta el momento son ciertas bajo el supuesto de que las 4 hipótesis del modelo de regresión lineal simple (linealidad, homocedasticidad, normalidad e independencia) se verifican. De lo contrario, no todas las interpretaciones obtenidas seguirían siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de homocedasticidad, normalidad e independencia, los intervalos de confianza que hemos obtenido no serían válidos.
+
+Bastaría que fallara una de las cuatro hipótesis para afirmar que el modelo de regresión lineal simple no es un buen modelo para la muestra de datos.
 
 ### Linealidad
 En primer lugar, podemos tratar de aventurar si se los datos siguen una tendencia lineal. Emplearemos una aproximación exploratoria, a través de una interpretación gráfica. Para ello, revisitemos la representación previamente definida.
@@ -375,20 +433,41 @@ Con el objetivo de realizar una prueba más precisa, planteamos el siguiente con
 $$
 \begin{cases}
 H_0: Y=\beta_0+\beta_1X+\epsilon\\
-H_a: Y=\beta_0+\beta_1X+\beta_2*X^2\epsilon
+H_a: Y=\beta_0+\beta_1X+\beta_2\cdotX^2\epsilon
 \end{cases}
 $$
 
 Ejecutamos la prueba:
 
-```{r resettest}
+```{r resettest2}
 # Empleamos power = 2 porque estamos considerando una alternativa cuadrática
 resettest(modelo, power = 2)
 ```
 
-Vemos que el p-valor es de 0.7613. INTERPRETAR.
+Vemos que el p-valor es de 0.7613. Dado que es superior a nuestro $\alpha$ fijado, que era del 0.01, no existen evidencias estadísticamente significativas a favor de $H_a$ (de hecho, el p-valor es superior a cualquiera de los niveles de significación habituales: 1%, 5% y 10%). Es decir, no tenemos pruebas en contra de $H_0$. Podemos asumir que la hipótesis nula es cierta: la variable respuesta se ajusta mejor a un modelo de regresión lineal simple que a uno cuadrático.
 
-No obstante, este contraste solo nos ha aportado información sobre la equiparación con un modelo cuadrático. Si buscáramos una confirmación perfecta, teórica, deberíamos seguir contrastando con todos los valores de power. Dado que esto es impracticable experimentalmente, podemos plantearnos en su lugar un contraste más general, con una alternativa no parámetrica:
+No obstante, este contraste solo nos ha aportado información sobre la equiparación con un modelo cuadrático. Podríamos plantearlo también para un modelo cúbico:
+
+$$
+\begin{cases}
+H_0: Y=\beta_0+\beta_1X+\epsilon\\
+H_a: Y=\beta_0+\beta_1X+\beta_2X^2+\beta_3X^3\epsilon
+\end{cases}
+$$
+
+```{r resettest3}
+# Empleamos power = 3 porque estamos considerando una alternativa cúbica
+resettest(modelo, power = 3)
+```
+
+Como el p-valor es también superior a 0.01, de nuevo podemos aceptar la hipótesis nula de que el modelo lineal es válido.
+
+        RESET test
+
+data:  modelo
+RESET = 0.11319, df1 = 1, df2 = 117, p-value = 0.7371
+
+Ahora bien, tendríamos que seguir experimentando para cualquier valores de power para contraponer estos modelos polinómicos, uno a uno, contra el lineal simple, pero ni siquiera en este caso estaríamos considerando todas las opciones de modelos. Dado que una exploración perfecta en este sentido es impracticable experimentalmente, podemos plantearnos en su lugar un contraste más general, con una alternativa no parámetrica:
 $$
 \begin{cases}
 H_0: Y=\beta_0+\beta_1X+\epsilon\\
@@ -396,7 +475,7 @@ H_a: Y=m(X)+\epsilon
 \end{cases}
 $$
 
-Haciendo uso del paquete _sm_, realizamos la prueba de hipótesis:
+Haciendo uso del paquete \texttt{sm}, realizamos la prueba de hipótesis:
 ```{r smregresion}
          
 # Importamos rpanel para abrir un panel interactivo para la representación
@@ -406,10 +485,15 @@ sm.regression(X, Y, model="linear", panel=T, test=T)
 ```
 
 La interpretación de la figura resultante es la siguiente. Con una línea negra nos aparece marcada una estimación no paramétrica de la regresión (sin asumir linealidad), y en azul, una región de confianza para el modelo lineal simple. Vemos que la línea negra se encuentra siempre dentro de la región azul. Por tanto, podemos asumir que la hipótesis nula es cierta, esto es, que los datos verifican la hipótesis de linealidad.
-FALTA ANALIZAR EL P-VALOR
 
+Al indicar test=T, hemos obtenido también un p-valor asociado. Como $0.659 > 0.01$, de nuevo no tenemos evidencias estadísticamente significativas a favor de $H_a$. Equivalentemente, no tenemos pruebas en contra de $H_0$. Podemos asumir que la hipótesis nula (que la variable respuesta se ajuste a un modelo de regresión lineal simple) es cierta.
 
 ### Homocedasticidad
+Corroboraremos ahora que la varianza del error es fija e independiente del valor que toma la variable explicativa:
+$$
+Var(\epsilon | X = x) = \sigma^2 \quad para todo x.
+$$
+
 Contrapongamos ahora los residuos del modelo a la variable explicativa. Se muestra también el diagrama de dispersión original:
 ```{r dispersionresiduos, echo=FALSE}
 par(mfrow=c(1,2))
@@ -428,7 +512,7 @@ par(mfrow=c(1,1))
 
 ```
 
-Queremos comprobar ahora si la varianza del error, $\sigma^2$, es la misma independientemente del valor que tome la variable explicativa. Vemos que la distribución de los residuos en el diagrama no sigue un patrón evidente, y que su desviación con respecto a la recta $x=0$ parece ser la misma sin importar el intervalo de X considerado. 
+Vemos que la distribución de los residuos en el diagrama no sigue un patrón evidente, y que su desviación con respecto a la recta $x=0$ parece ser la misma sin importar el intervalo de X considerado. 
 
 Tampoco sobre el diagrama de dispersión de la variable respuesta observamos una tendencia significativa acera de las desviaciones con la recta de regresión. En conjunción con lo anterior, podríamos aventurar, a primera vista, que los datos muestrales son verdaderamente homocedásticos.
 
@@ -442,24 +526,25 @@ H_a: \text{modelo heterocedástico}
 \end{cases}
 $$
 
-Ejecutamos un test de Harrison-McCabe con R, haciendo uso del previamente cargado paquete _lmtest_:
+Ejecutamos un test de Harrison-McCabe con R, haciendo uso del previamente cargado paquete \texttt{lmtest}:
 ```{r hmctest}
 hmctest(Y~X)
 ```
-El p-valor es de 0.763.
+El p-valor es de $0.763 > 0.01 = \alpha$. Por un razonamiento análogo a los anteriores, no existen pruebas estadísticamente significativas para rechazar la hipótesis nula, y podemos asumirla como válida: aceptamos que el modelo es homocedástico.
 
 
 ### Normalidad
 Para corroborar que el error tiene distribución normal, haremos varias representaciones gráficas que nos permitan intuir si la hipótesis se ajusta a los datos. Trabajaremos con los residuos estandarizados, pues no tienen la misma varianza y la correlación entre cada 2 de ellos puede ser distinta (provienen de distribuciones diferentes).
 
-Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería _car_), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
+Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería \texttr{car}), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
 
 ```{r representacionnormalidad, echo=FALSE}
 residuos.estan = rstandard(modelo)
 
 par(mfrow = c(1, 3 )) 
 
-hist(residuos.estan, col=c(viridis(n=5, begin=0, end=0.8), viridis(n=1, begin=1), viridis(n=5, begin=0.8, end=0)))
+hist(residuos.estan, col=c(viridis(n=5, begin=0, end=0.8), viridis(n=1, begin=1), viridis(n=5, begin=0.8, end=0)),
+    main="Histograma de los residuos estandarizados")
 rug(residuos.estan)
 
 boxplot(residuos.estan, col="gray")
@@ -471,7 +556,7 @@ En el histograma podemos apreciar una cierta asimetría hacia la derecha (valore
 
 El QQPlot o diagrama cuantil-cuantil nos presenta una comparativa entre los cuantil muestrales de los residuos estandarizados y los cuantiles teóricos de una normal estándar. Si los residuos estandarizados presentaran una distribución normal de media 0 y varianza 1, se situarían alrededor de la recta diagonal resaltada. En nuestro caso, vemos que en la zona central el ajuste es bueno, pero hay una cierta desviación en las colas. Esto es especialmente notorio en la superior, donde los cuantiles muestrales son algo inferiores a los cuantiles teóricos de una normal, que es lógico y coherente con la asimetría indicada anteriormente.
 
-Ahora bien, una representación visual es solamente un apoyo al estudio, y no podemos inferir de ella una conclusión estadísticamente definitoria. Para ello , emplearemos  directamente un test de bondad de ajuste sobre los errores estandarizados con respecto a una distribución normal. Aunque hay varias opciones adecuadas, como el test de Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado con este propósito es el test de Shapiro-Wilk, especialmente diseñado para contrastes de normalidad:
+Ahora bien, una representación visual es solamente un apoyo al estudio, y no podemos inferir de ella una conclusión estadísticamente definitoria. De hecho, pequeñas desviaciones con respecto a la hipótesis de linealidad, por ejemplo, podrían tener efecto sobre los gráficos obtenidos. Por ello , emplearemos directamente un test sobre los errores estandarizados con respecto a una distribución normal. Aunque hay varias opciones adecuadas, como el test de Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado con este propósito es el test de Shapiro-Wilk, especialmente diseñado para contrastes de normalidad:
 
 $$
 \begin{cases}
@@ -485,13 +570,32 @@ Ejecutemos pues el contraste de especificación mencionado:
 shapiro.test(residuos.estan)
 ```
 
+        Shapiro-Wilk normality test
+
+data:  residuos.estan
+W = 0.98768, p-value = 0.3518
+
 También podemos comprobar los resultados de otros tests:
 ```{r kslillie}
-# TODO FIXME
-# el argumento y esta ausente
-# ks.test(residuos.estan)
+ # Semilla para la generación de números aleatorios en ks.test
+set.seed(as.numeric(Sys.time()))                 
+# Comprobamos si los residuos estandarizados coinciden en distribución con una muestra aleatoria N(0,1) de n datos
+# El contraste es two-sided porque estamos interesados en comprobar ambas colas
+ks.test(residuos.estan, rnorm(n), alternative="two.sided")     
+# Realizamos también un Lillie test
 lillie.test(residuos.estan)
 ```
+        Two-sample Kolmogorov-Smirnov test
+
+data:  residuos.estan and rnorm(n)
+D = 0.11667, p-value = 0.3877
+alternative hypothesis: two-sided
+        Lilliefors (Kolmogorov-Smirnov) normality test
+
+data:  residuos.estan
+D = 0.057751, p-value = 0.4207
+
+Todos los p-valores obtenidos mediante estos tests son superiores al $\alpha$ fijado, 0.01. Por consiguiente, no existen pruebas estadísticamente significativas a favor de $H_a$. No tenemos pruebas en contra de $H_0$ y, por tanto, podemos asumir que la hipótesis nula es cierta (que los errores tienen distribución normal).
 
 Una observación adicional: en este caso, tenemos que el tamaño de la muestra, n, es mayor que 30, de modo que se pueden despreciar las impurezas debidas a utilizar los residuos en el estudio de la normalidad, en lugar de los errores (que no están sujetos a la aplicación del ajuste de mínimos cuadrados).
 ```{r inputsize}
@@ -512,16 +616,3 @@ H_a: \epsilon\text{ son correlacionados de orden k}
 \end{cases}
 $$
 En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Así, fijado un k y dados unos errores 
-
-
-BONDAD DE AJUSTE ES EL COEFICIENTE DE DETERMINACIÓN (ES UNA MEDIDA DE CUÁNTO DE BUENO ES EL MODELO). EL R^2 AJUSTADO ES OTRA MEDIDA DE BONDAD DE AJUSTE. TAMBIÉN HAY CONTRASTES. ESTÁ EN EL SUMMARY.
-
-ACEPTAR LA H0 EN CONTRASTE LINEALIDAD POLINÓMICO SOLO SIGNIFICA QUE MI MODELO ES MEJOR QUE UN POLINÓMICO DE ORDEN 2, 3...
-
-EL SM TE LO CONTRASTA CON ALTERNATIVA NO PARAMÉTRICA -> ES MEJOR MI MODELO QUE CUALQUIER OTRA COSA? CON HACER ESTE ES SUFICIENTE
-
-a veces las formas raras en homocedasticidad (qqplot) se pueden deber a falta de linealidad. Es más conncluyente el contraste
-
-
-HAY QUE FIJAR EL ALFA DESDE EL PRINCIPIO. METER YA DESDE LA INTRODUCCIÓN. EN ESTE CASO TENDREMOS QUE FIJAR ALFA = 1% (NIVEL 99%) POR EL APARTADO 3
-
