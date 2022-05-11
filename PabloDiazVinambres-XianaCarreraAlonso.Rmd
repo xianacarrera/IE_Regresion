@@ -249,33 +249,14 @@ predict(modelo, newdata=data.frame("X"=x0, interval = "prediction"), level=0.99)
   no todas las interpretaciones obtenidas seguirían siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de homocedasticidad, normalidad e independencia, los intervalos de confianza que hemos obtenido no serían válidos.
 
 ## Linealidad
-En primer lugar, podemos tratar de aventurar si se los datos siguen una tendencia lineal. Emplearemos una aproximación exploratoria, a través de una interpretación gráfica. Para ello, revisitemos la representación previamente definida, y creemos también una nueva gráfica en la que contrapongamos los residuos a los valores de X.
+En primer lugar, podemos tratar de aventurar si se los datos siguen una tendencia lineal. Emplearemos una aproximación exploratoria, a través de una interpretación gráfica. Para ello, revisitemos la representación previamente definida.
 
 ```{r pressure, echo=FALSE}
-par(mfrow=c(1,2))
-
 representar()
 abline(modelo, col="red", lwd=2)
-
-
-residuos <- modelo$residuos
-
-representar_residuos <- function(){
-  plot(X, residuos,
-     main="Diagrama de dispersión", pch=16,
-     sub="Subtítulo")
-  abline(h=0, col="gray", lwd=2)
-}
-
-representar_residuos()
-
-par(mfrow=c(1,1))
 ```
 
-Vemos que los puntos parecen distribuirse en torno a la recta de forma lineal. Si bien hay datos un tanto atípicos,
-especialmente en los extremos, esto no es lo suficientemente significativo como para rechazar la hipótesis. Tampoco se ve un patrón evidente en los datos (es esto lo que debemos tratar de detectar, y no solo corroborar que haya el mismo número de puntos por encima/debajo de la recta, que no es suficiente como para indicar linealidad).
-
-Los residuos parecen distribuirse en torno a la recta horizontal $x=0$ sin un patrón claramente visible. Sin embargo, sí es cierto que hay residuos con una variabilidad especialmente alta. Lo analizaremos de forma más precisa cuando estudiemos la homocedasticidad, pero no tiene efectos sobre el análisis de linealidad. 
+Vemos que los puntos parecen distribuirse en torno a la recta de forma lineal. Si bien hay datos un tanto atípicos, especialmente en los extremos, esto no es lo suficientemente significativo como para rechazar la hipótesis. Tampoco se ve un patrón evidente en los datos (es esto lo que debemos tratar de detectar, y no solo corroborar que haya el mismo número de puntos por encima/debajo de la recta, que no es suficiente como para indicar linealidad).
 
 Nótese que aunque se puede apreciar una menor concentración de puntos para valores de X comprendidos alrededor del valor 4, esto no es indicativo de una falta de linealidad. Dado que trabajamos bajo diseño fijo, se tiene que achacar a decisiones sobre las condiciones de medición o al propio diseño del experimento. Esta observación se puede comprobar a través del siguiente cuadro:
 
@@ -285,8 +266,25 @@ Nótese que aunque se puede apreciar una menor concentración de puntos para val
 table(cut(X, breaks=seq(from=floor(min(X)), to=ceiling(max(X)), by=0.5)))
 ```
 
+Con el objetivo de realizar una prueba más precisa, planteamos el siguiente contraste de hipótesis. Como hipótesis nula tenemos que la variable respuesta siga el modelo lineal simple que hemos estado considerando, y como hipótesis nula, que siga un modelo parabólico, donde hay dependencia de la variable explicativa al cuadrado:
+$$
+\begin{cases}
+H_0: Y=\beta_0+\beta_1X+\epsilon\\
+H_a: Y=\beta_0+\beta_1X+\beta_2*X^2\epsilon
+\end{cases}
+$$
 
-Con el objetivo de realizar una prueba más precisa, planteamos el siguiente contraste de hipótesis, en el que como hipótesis nula tenemos que la variable respuesta siga el modelo lineal simple y, como hipótesis alternativa, q
+Ejecutamos la prueba:
+
+```{r cars}
+library(lmtest)
+# Empleamos power = 2 porque estamos considerando una alternativa cuadrática
+resettest(modelo, power = 2)
+```
+
+Vemos que el p-valor es de 0.7613. INTERPRETAR.
+
+No obstante, este contraste solo nos ha aportado información sobre la equiparación con un modelo cuadrático. Si buscáramos una confirmación perfecta, teórica, deberíamos seguir contrastando con todos los valores de power. Dado que esto es impracticable experimentalmente, podemos plantearnos en su lugar un contraste más general, con una alternativa no parámetrica:
 $$
 \begin{cases}
 H_0: Y=\beta_0+\beta_1X+\epsilon\\
@@ -299,14 +297,92 @@ Haciendo uso del paquete _sm_, realizamos la prueba de hipótesis:
 library(sm)
 library(rpanel)            
 # Importamos rpanel para abrir un panel interactivo para la representación
-sm.regression(X, Y, model="linear", panel=T)
+# Los valores que sabemos interpretar son los que aparecen con las opciones por defecto
+# Indicamos test=T para que se nos muestre un p-valor.
+sm.regression(X, Y, model="linear", panel=T, test=T)
 ```
 
 La interpretación de la figura resultante es la siguiente. Con una línea negra nos aparece marcada una estimación no paramétrica de la regresión (sin asumir linealidad), y en azul, una región de confianza para el modelo lineal simple. Vemos que la línea negra se encuentra siempre dentro de la región azul. Por tanto, podemos asumir que la hipótesis nula es cierta, esto es, que los datos verifican la hipótesis de linealidad.
-
+FALTA ANALIZAR EL P-VALOR
 
 
 ## Homocedasticidad
+Contrapongamos ahora los residuos del modelo a la variable explicativa. Se muestra también el diagrama de dispersión original:
+```{r cars}
+par(mfrow=c(1,2))
+
+representar()
+abline(modelo, col="red", lwd=2)
+
+residuos <- modelo$residuals
+
+plot(X, residuos,
+   main="Diagrama de dispersión", pch=16,
+   sub="Subtítulo")
+abline(h=0, col="gray", lwd=2)
+
+par(mfrow=c(1,1))
+
+```
+
+Queremos comprobar ahora si la varianza del error, $\sigma^2$, es la misma independientemente del valor que tome la variable explicativa. Vemos que la distribución de los residuos en el diagrama no sigue un patrón evidente, y que su desviación con respecto a la recta $x=0$ parece ser la misma sin importar el intervalo de X considerado. 
+
+Tampoco sobre el diagrama de dispersión de la variable respuesta observamos una tendencia significativa acera de las desviaciones con la recta de regresión. En conjunción con lo anterior, podríamos aventurar, a primera vista, que los datos muestrales son verdaderamente homocedásticos.
+
+Sí destacamos que la interpretación para la región central, en aproximadamente $(4, 4.5)$, puede no ser muy precisa, por falta de datos. Sin embargo, esto no basta para desmentir la hipótesis de homocedasticidad.
+
+Para tener una confirmación precisa, nos planteamos el siguiente contraste de hipótesis:
+$$
+\begin{cases}
+H_0: \text{modelo homocedástico}\\
+H_a: \text{modelo heterocedástico}
+\end{cases}
+$$
+
+Ejecutamos un test de Harrison-McCabe con R, haciendo uso del previamente cargado paquete _lmtest_:
+```{r cars}
+hmctest(Y~X)
+```
+El p-valor es de 0.763.
+
+
+## Normalidad
+Para corroborar que el error tiene distribución normal, haremos varias representaciones gráficas que nos permitan intuir si la hipótesis se ajusta a los datos. Trabajaremos con los residuos estandarizados, para tener en cuenta que la correlación entre 2 de ellos puede variar.
+
+Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería _car_), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
+
+```{r cars}
+residuos.estan = rstandard(modelo)
+
+par(mfrow = c(1, 3 )) 
+
+library(viridis)
+hist(residuos.estan, col=viridis(11))
+rug(residuos.estan)
+
+boxplot(residuos.estan, col="gray")
+
+library(car)
+qqPlot(residuos.estan)
+```
+
+
+
+emplearemos directamente un test de bondad de ajuste sobre los errores estandarizados, con respecto a dicha distribución. Aunque hay varias opciones adecuadas, como el test de Kolmogorov-Smirnov y el test de Lilliefoids, el más ampliamente usado con este propósito es el test de Shapiro-Wilk, especialmente diseñado para contrastes de normalidad:
+
+$$
+\begin{cases}
+H_0: \epsilon\text{ sigue una distribución normal}\\
+H_a: \epsilon\text{ no sigue una distribución normal}
+\end{cases}
+$$
+
+Como observación, comentamos que el motivo por el cual se estandarizan los residuos es para tener en cuenta que la correlación entre 2 de ellos puede variar.
+
+Ejecutemos pues el contraste de especificación mencionado:
+```{r cars}
+
+```
 
 
 

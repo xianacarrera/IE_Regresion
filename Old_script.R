@@ -41,7 +41,7 @@ covar = cov(X,Y)*(n-1)/n; covar           # Covarianza
 cov(X,Y)                   # Cuasicovarianza o como quieran llamarla
 
 
-cor(X, Y47)
+cor(X, Y)
 
 mX <- mean(X)
 mY <- mean(Y)
@@ -190,7 +190,7 @@ y0.tilde <- beta0.gorro + beta1.gorro * x0
 
 # Con qué nivel de confianza?
 predict(modelo, newdata=data.frame("X"=x0), interval = "confidence", level=0.99)
-predict(modelo, newdata=data.frame("X"=x0, interval = "prediction"), level=0.99)
+predict(modelo, newdata=data.frame("X"=x0), interval = "prediction", level=0.99)
 
 
 
