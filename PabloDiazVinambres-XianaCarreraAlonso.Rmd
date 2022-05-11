@@ -8,12 +8,8 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 options(tinytex.verbose = TRUE)
 ```
+TODO BORRAR EJEMPLO TABLAS
 
-## R Markdown
-
-Poner introducción aquí
-
-o tablas:
 \begin{center}
 \begin{tabular}{ |c c c| }
  \hline
@@ -26,10 +22,41 @@ o tablas:
 \end{center}
 
 # Introducción
-En el siguiente informe se hará un estudio estadístico en el que se analizará la influencia de la variable X sobre la variable Y, en el marco de la regresión lineal. 
+En este documento se describe y documenta el ajuste y análisis de un modelo de regresión lineal simple en base a los datos proporcionados para una variable explicativa X y una variable respuesta Y.  
+ 
+El estudio se fundamentará en los conceptos teóricos relacionados con los modelos de regresión lineal simple y su validación que fueron estudiados a lo largo de los Temas 6 y 7 de la asignatura de Inferencia Estadística. Se hará referencia explícita a los mismos a medida que sean empleados. 
+ 
+Asimismo, se utilizará R para realizar las operaciones necesarias para el análisis. Los detalles relativos al empleo de sus funciones se detallarán o bien en el propio informe o bien a través de comentarios sobre el código. 
+
+# Modelo de regresión lineal simple
+Recordemos que un modelo de regresión sirve para representar la dependencia de una variable Y respecto de una o varias variables X. En particular, en el modelo de regresión lineal simple se consideran variables X e Y univariantes (esto es, reflejan el valor de una sola característica) y parte de las hipótesis de linealidad, homocedasticidad y normalidad e independencia de los errores (véase una explicación detallada de las mismas en el ejercicio 7).
+
+Consideraremos una muestra extraída bajo diseño fijo, esto es, con datos $(x_1, Y_1), ..., (x_n, Y_n)$, donde $x_1, ..., x_n$ están fijados por el experimentador.
+
+Así, tendremos
+$$
+Y_i = \beta_0 + \beta_ 1*x_i + \epsilon_i  \quad \text{para}\; i \in {1,...,n}
+$$
+donde $\epsilon_1,...,\epsilon_n \in N(0, \sigma^2)$ y son independientes.
+
+
+Este modelo presenta 3 parámetros: \beta_0
+ 
+# Cuestiones preliminares 
+En cada una de las secciones del documento se trabajará con $\textbf{\alpha = 0.01}$ para los distintos contrastes, intervalos de confianza, etc. planteados. Equivalentemente, se empleará un nivel de significación $1 - \alpha = 0.99$. 
+```{r alfa}
+alfa <- 1 - 0.99; alfa
+conf.level <- 1 - alfa; conf.level
+```
+
+Esta elección se debe al enunciado del tercer ejercicios, dónde se pide emplear un nivel de significación del 99% para la construcción de intervalos de confianza de los parámetros del modelo. Para mantener entonces la consistencia en todo el informe, se decidió conservarlo en los demás apartados que lo requieren.
+
 
 ## Librerías utilizadas
+Cargamos a continuación todas las librerías que utilizaremos a lo largo de la ejecución. Si alguno de los paquetes no ha sido previamente instalado, debe ejecutarse la instrucción \texttt{_install.packages("nombre_del_paquete")}.  
+
 ```{r librerias}
+# install.packages("paquete_de_ejemplo")
 library(ggplot2)      # Para diagrama de dispersión con región de confianza
 library(lmtest)
 library(sm)
@@ -40,8 +67,6 @@ library(car)          # Necesario para QQPlot
 ```
 
 ## Lectura de datos
-Asimismo, leemos el número de datos n.
-
 En primer lugar, leemos los datos del archivo proporcionado, que cuenta con 76 variables respuesta, Y1, ..., Y76, y una variable explicativa común, X. En nuestro caso, limitaremos el estudio a Y47, que denotaremos sencillamente como Y de aquí en adelante.
 
 Nada más importar el archivo (para lo cual es necesario que el usuario cambie el directorio actual, empleando, por ejemplo, _setwd_ o _Ctrl + May + H_), realizamos un pequeño análisis estadístico de los datos empleando las funciones estándar _head_, _class_, _names_, _str_ y _summary_.
@@ -56,14 +81,17 @@ Por comodidad para cálculos posteriores, también guardamos el número de datos
 # Leemos los datos empleando read.table (por la extensión .txt)
 # Indicamos que existe una cabecera, que las columnas están separadas por espacios y que el signo decimal es el punto.
 datos <- read.table("datos_trabajo_temas6y7.txt", header=T, sep=" ", dec=".")
+# Vemos los nombres de las variables
+names(datos)
+
+# Y nos quedamos con las variables de interés
+datos <- datos[, c("X", "Y47")]
+
 # Comprobamos la estructura de las primeras filas
 head(datos)
 
 # Comprobamos que el objeto resultante es un data.frame
 class(datos)
-
-# Vemos los nombres de las variables
-names(datos)
 
 # Comprobamos la estructura de los datos
 str(datos)
@@ -80,59 +108,73 @@ n <- length(Y)
 ```
 
 # 1) Relación entre variable explicativa y variable respuesta
-En primer lugar, calculamos la covarianza entre las variables. Debemos tener en cuenta que R la calcula como una 'cuasi'covarianza, es decir, dividiendo entre $n-1$ en lugar de entre $n$. Para corregirlo, multiplicamos por $n-1$ y dividimos entre $n$, aunque también mostraremos el valor original.
+En primer lugar, calculamos la covarianza y el coeficiente de correlación entre las variables:
+$$
+S_{xY}=\frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})(Y_i-\overline{Y}))\quad\quad\quad 
+r_{xY}=\frac{S_{xY]}}{\sqrt{S_x^2}\sqrt{S_Y^2}}
+$$
 
-y el coeficiente de correlación de los datos,
-con el objetivo de ver si existe relación lineal entre las variables.
+Debemos tener en cuenta que R calcula la covarianza como una 'cuasi'covarianza, es decir, dividiendo entre $n-1$ en lugar de entre $n$. Para corregirlo, multiplicamos por $n-1$ y dividimos entre $n$, aunque también mostraremos el valor original. No afectará al coeficiente de correlación, pues el denominador se anula con los $\sqrt{n-1}$ de las cuasidesviaciones típicas.
 
 ```{r cov}
 covar = cov(X,Y)*(n-1)/n; covar           # Covarianza
 cov(X,Y)                                  # Cuasicovarianza
 cor(X, Y)                                 # Coeficiente de correlación
 ```
-Como vemos, tanto la covarianza como la correlación son negativas. En el caso de la covarianza, esta no nos indica una medida fiable de la relación entre los datos, ya que depende de la escala de los datos. Sin embargo, la correlación, con un valor de -0.95 nos da a entender una relación de proporcionalidad inversa entre X e Y, que podremos corroborar posteriormente al ver el diagrama de dispersión. 
+Que la covarianza sea distinta de 0 nos indica que hay una relación lineal. Además, al ser negativa, deducimos que esta es indirecta/inversa, es decir, que al aumentar la variable X, la variable Y diminuye. 
 
-A  continuación hallamos el vector de medias o centro de gravedad aplicando \texttt{mean} en ambas variables:
+Adionalmente, ya sabemos que la recta de regresión que obtendremos posteriormente será decreciente, pues la pendiente estimada, $\beta_1 = \frac{S_{xY}}{S_x^2}$, tiene el mismo signo que $S_{xY}$, al ser la varianza siempre no negativa, y hemos obtenido que $S_{xY} < 0$.
+
+Por un razonamiento análogo, $r_{xY}$ también debe tener el mismo signo que $S_{xY}$ y, en efecto, esto es lo que observamos en los resultados. La interpretación de su signo es, por tanto, la misma que la expuesta para la covarianza (relación lineal inversa/indirecta).
+
+Ahora bien, no podemos sacar conclusiones acerca de la magnitud de la covarianza, pues esta tiene unidades (que ni siquiera conocemos). Por el contrario, el coeficiente de correlación es adimensional y, de hecho, sabemos que $|r_{xY}| \in [-1,1]$. Como $|r_{xY}| > 0.75$, la relación entre las variables es fuerte, esto es, tienen una correlación significativa. Cuando representemos el diagrama de dispersión de los datos y sobre el mismo, la recta de regresión, observaremos que los puntos son próximos a esta.
+
+### Representación gráfica
+Para visualizar la relación entre la variable explicativa y la variable respuesta, emplearemos un diagrama de dispersión. 
+
+En primer lugar, hallamos el vector de medias o centro de gravedad aplicando \texttt{mean} en ambas variables:
 
 ```{r medias}
 mX <- mean(X)
 mY <- mean(Y)
 
-c(mX, mY)    # Mostramos el vector de medias
+c(mX, mY) # Mostramos el vector de medias
 ```
 
-Y con la siguiente función generamos el diagrama de dispersión de los datos:
+Como diagrama básico, emplearemos la función \texttt{plot}. Como recurriremos a este gráfico en particular en varias ocasiones a lo largo de este documento, vamos a definir una función que englobe la representación:
 
 ```{r dispersion, echo = FALSE}
 representar <- function(){
   plot(X, Y,
        main="Diagrama de dispersión", pch=16,
-       sub="Subtítulo")
+       sub="Relación entre la variable explicativa y la variable respuesta")
   
   # Añadimos un punto para el vector de medias
   points(mX, mY, pch=12, col=3, cex=2)
   
-  # Añadimos dos rectas para dividir en cuadrantes
+  # Añadimos dos rectas para dividir en cuadrantes, limitados por el vector de medias
   abline(v=mX, col=3, lty=1, lwd=2)   # Vertical
   abline(h=mY, col=3, lty=1, lwd=2)   # Horizontal
   
-  
-  grid(nx = NULL, ny = NULL, lty = 2, col = "lightgray", lwd = 1)
+  # Añadimos una rejilla de fondo
+  grid(lty = 2, col = "lightgray", lwd = 1)
 }
 
-representar()
+representar() # Ejecutamos la función
 ```
-Fácilmente observamos que la nube de puntos toma una forma descendente, lo cuál encaja con el hecho de que la correlación entre X e Y sea negativa. También vemos que los datos están, de forma aproximada, uniformemente alineados en torno a una forma rectilínea. Todo esto motiva el establecimiento de un modelo lineal para la relación entre ambas variables. Recordemos que los modelos lineales son de la forma:
+
+Se puede ver que la nube de puntos toma una forma descendente, lo cual es coherente con la correlación negativa de X e Y. También vemos que los datos están, de forma aproximada, uniformemente alineados en torno a una forma rectilínea. Todo esto motiva el establecimiento de un modelo lineal para la relación entre ambas variables que, recordemos, son de la forma:
 $$
 Y = \beta_0 + \beta_1X + \epsilon
 $$
-Ajustamos entonces este modelo a nuestros datos mediante la función lm:
+
+Ajustamos entonces este modelo a nuestros datos mediante la función \texttt{lm}:
 ```{r modelo}
 modelo = lm(Y~X); modelo
 ```
-y obtenemos un intercepto $\beta_0 = 4.184$ y una pendiente de $\beta_1 = -1.023$, lo cuál concuerda con lo observado anteriormente en la nube de puntos. 
+y obtenemos un intercepto $\beta_0 = 4.184$ y una pendiente de $\beta_1 = -1.023$, lo cual concuerda con lo observado anteriormente en la nube de puntos. 
 
-En los siguientes ejercicios, analizaremos más en profundidad este modelo. Además, lo validaremos frente a otros modelos como los polinómicos o los no paramétricos.
+En los siguientes ejercicios, analizaremos en profundidad diferentes caracteríssticas de este modelo y obtendremos inferencia a partir del mismo. Nótese que para que las conclusiones extraídas en estos ejercicios tengan validez, deberemos suponer que se cumplen las hipótesis de linealidad, homocedasticidad y normalidad e independencia de los errores. Las comprobaremos de forma precisa en el ejercicio 7, pero de no ser válida alguna de ellas, tendríamos que revisar y descartar multitud de resultados.
 
 ## Ejercicio 2
 ### Estimación puntual a mano
@@ -148,11 +190,11 @@ sd.error = sqrt(var.error); sd.error
 ```
 
 ### Estimación puntual automática
-De manera alternativa, podemos obtenrlas a partir del propio modelo creado anteriomente por $\mathbb{R}$:
+De manera alternativa, podemos obtenerlas a partir del propio modelo creado anteriomente por $\mathbb{R}$:
 ```{r estpuntauto}
-modelo    # Información del modelo
-modelo$coefficients         # beta0 gorro y beta1 gorro
-
+modelo
+# Intercepto beta0gorro y pendiente beta1gorro
+modelo$coefficients
 # En modelo$residuals están los residuos
 sum(modelo$residuals^2)/(n-2)
 ```
@@ -178,12 +220,8 @@ p3
 ## Ejercicio 3
 \textit{Calcula los intervalos de confianza para los parámetros del modelo de nivel 99%.
 Interpreta los resultados obtenidos.}
-En el siguiente apartado, En primer lugar, establecemos el nivel de significación $\alpha$.
-```{r alfa}
-alfa <- 1 - 0.99
-```
 
-A continuación, hallamos los intervalos para 
+A continuación, hallamos los intervalos para
 El pivote es ((PASAR A LATEX)) beta0.gorro - beta0/(sqrt(var.gorro*(1/n+mX^2/(n*var.X))) que es una
 T de Student con n-2 grados de libertad
 
@@ -196,6 +234,7 @@ beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC
 
 El pivote es ((PASAR A LATEX)) pivote beta1.gorro - beta1/sqrt(var.gorro/ (var.X * n)) que es una
 T de Student con n-2 grados de libertad
+
 
 ```{r icbeta1mano}
 beta1.cuantil <- beta0.cuantil
@@ -224,22 +263,33 @@ confint(modelo, level=0.99)
 No hay una automatización del cálculo de la varianza del error
 
 ## Ejercicio 4
-\textit{Realiza los contrates de significación asociados al intercepto y a la pendiente del
-modelo de regresión considerado. Interpreta los resultados obtenidos. En base a
-los resultados obtenidos, ¿tendría sentido considerar otro modelo más sencillo?}
-A continuación, realizaremos los contrastes de significación sobre el modelo con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no.
-En primer lugar, realizaremos el contraste de forma manual a partir de los estadísticos de contraste basado en el pivote de la estimaciones puntuales previas:
+\textit{Realiza los contrates de significación asociados al intercepto y a la pendiente del modelo de regresión considerado. Interpreta los resultados obtenidos. En base a los resultados obtenidos, ¿tendría sentido considerar otro modelo más sencillo?}
+A continuación, realizaremos los contrastes de significación sobre los parámetros $\hat{\beta_0} y \hat{\beta_1}$ con el objetivo de determinar si este se podría simplificar a uno con menos variables o no. Las hipótesis de estos contrastes son, respectivamente:
+$$
+\begin{cases}
+H_0: \beta_0 = 0\\
+H_a: \beta_0 \neq 0
+\end{cases}
+$$
+y
+$$
+\begin{cases}
+H_0: \beta_1 = 0\\
+H_a: \beta_1 \neq 0
+\end{cases}
+$$
+En primer lugar, realizaremos los contrastes de forma manual. Esto se hará a partir de los estadísticos de contraste basados en el pivote de las estimaciones puntuales previas:
 ```{r signifmano}
-# Contraste de significacion para beta0
-beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1/n + mX^2/(n*var.X)))); beta0.t
-beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n*var.X)); beta1.t
-# Rechazamos la hipótesis nula de que el modelo tiene origen de 0
+# Contrastes de significación para beta0gorro y beta1gorro
+beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1 / n + mX ^ 2 / (n * var.X)))); beta0.t
+beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n * var.X)); beta1.t
+# Ambos contrastes caen en la región de rechazo
 beta0.t > beta0.cuantil 
-# Rechazamos la hipótesis nula de que el modelo no tiene pendiente
 beta1.t > beta1.cuantil
-# El p-valor es 0 --> La hipótesis nula es falsa para cualquier nivel de signif. --> El modelo tiene un intercepto distinto de 0
+# El p-valor del 1º contraste es ~0 -> La hipótesis nula es falsa para cualquier nivel de signif. razonable
 beta0.pvalor = dt(beta0.t, df=n-2); beta0.pvalor
-# El p-valor es 0 --> La hipótesis nula es falsa para cualquier nivel de signif. --> El modelo tiene una pendiente distinta de 0
+
+# El p-valor del 2º contraste es ~0 -> La hipótesis nula es falsa para cualquier nivel de signif. razonable 
 beta1.pvalor = dt(beta1.t, df=n-2); beta1.pvalor
 ```
 
@@ -254,30 +304,50 @@ En concreto, los valores relevantes son el t-value y el Pr(>|t|) de las filas (I
 En base a los resultados obtenidos anteriormente, decidimos no simplificar más nuestro modelo y continuar realizando regresión lineal.
 
 ## Ejercicio 5
-\textit{Si consideramos que la variable 𝑋𝑋 toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable 𝑌𝑌. Interpreta los resultados obtenidos.}
+\textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
 
 En este apartado, consideramos 3 nuevos valores para la variable explicativa $X = 2, 4, 6$. Para obtener intervalos de confianza para la media de Y condicionada a estos valores y de predicción, es necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es debido a que no sabemos como se comporta el modelo fuera del rango observado, y nuestro objetivo es predecir y no extrapolar.
 ```{r validacionnuevosdatos}
 nuevosValores <- c(2, 4, 6)
-# El rango está contenido
+nuevosValores
+# Los nuevos valores están contenidos dentro del rango observado
 min(X) < min(nuevosValores) && max(X) > max(nuevosValores)
 # Construimos un data.frame  con los nuevos datos ya que predict necesita este formato para sus predicciones
 nuevosDatos = data.frame("X" = nuevosValores)
 ```
-Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función predict sobre el modelo de R. Obtendremos ambos intervalos para los niveles de significación 0.95 y 0.99. ((TODO: REVISAR, ESTOS ESTÁN BIEN PERO DEBERÍAN SER CONSISTENTES CON OTRAS PARTES DONDE COJAMOS ALFAS ARBITRARIOS))
+Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función predict sobre el modelo de R. Obtendremos ambos intervalos para los niveles de significación fijado anteriormente $\alfa = 0.99$.
 
 En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$ obtenemos los asociados a la media condicionada.
 ```{r intmediacond}
-predict(modelo, newdata = nuevosDatos, interval = "confidence", level=0.95)
-predict(modelo, newdata = nuevosDatos, interval = "confidence", level=0.99)
+predict(modelo, newdata = nuevosDatos, interval = "confidence", level = alfa)
 ```
 Y para obtener los intervalos de predicción, los cuáles serán más amplios que los anteriores, pasamos el argumento $\texttt{interval = "prediction"}$
 ```{r intprediccion}
-predict(modelo, newdata = nuevosDatos, interval = "prediction", level=0.95)
-predict(modelo, newdata = nuevosDatos, interval = "prediction", level=0.99)
+predict(modelo, newdata = nuevosDatos, interval = "prediction", level = alfa)
 ```
 ## Ejercicio 6 
-TODO
+\textit{Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado.}
+El objetivo del cálculo de una medida de bondad de ajuste es determinar como de "bueno" o "potente" es un modelo de regresión. En terminos estadísticos, esto se traduce a cuánta proporción de la variabilidad de $Y$ puede ser explicada por el modelo de regresión. En el caso del modelo lineal, podemos descomponer la varianza como
+$$
+\sigma_Y^2 = 
+\sum_{i=1}^n (Y_i - \overline{Y})^2 = 
+\sum_{i=1}^n (Y_i - \hat{\beta_0} - \hat{\beta_1}*x_i)^2 + 
+\sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}*x_i - \overline{Y})^2
+$$
+
+Dónde observamos que el segundo sumando representa la varianza explicada por la recta de regresión, mientras que el primero representa la no explicada. Es por tanto necesario que el cociente $\frac{RSS}{TSS}$, dónde TSS (\textit{Total Sum of Squares}) es la varianza total de $Y$ y RSS (\textit{Residual Sum of Squares}) es la no explicada por el modelo, sea lo menor posible.
+De esta forma, definimos el coeficiente de determinación $ R^2 = 1 - \frac{RSS}{TSS}$. En primer lugar, calcularemos este cociente a mano:
+
+```{r coefdeterman}
+rss = sum((Y - beta0.gorro - beta1.gorro*X)^2); rss
+tss = var(Y)
+r2 = 1 - rss/tss; r2
+```
+Aunque también podemos obtenerla a partir del modelo de R, en el campo \textit{Adjusted R-Squared}:
+```{r coefdeterauto}
+summary(modelo)
+```
+Obtenemos un valor de 0.903, lo cuál nos indica que nuestro modelo es bastante potente en términos habituales. Cabe destacar que el hecho de que el coeficiente de determinación sea alto, no nos indica aún que nuestro modelo sea correcto, lo cuál será discutido en el apartado 7. El recíproco tampoco es cierto, podríamos tener un modelo correcto que no fuera bueno.
 
 ## Ejercicio 7
   Las técnicas de inferencia empleadas hasta el momento son ciertas bajo el supuesto de que las 4 hipótesis del modelo de regresión lineal simple (linealidad, homocedasticidad, normalidad e independencia) se verifican. De lo contrario,

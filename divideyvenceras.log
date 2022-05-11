@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  11 MAY 2022 16:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  11 MAY 2022 19:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**PabloDiazVinambres-XianaCarreraAlonso.tex
-(./PabloDiazVinambres-XianaCarreraAlonso.tex
+**divideyvenceras.tex
+(./divideyvenceras.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-05-04> (c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
@@ -309,8 +309,8 @@ Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
 File: l3backend-pdftex.def 2022-04-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count288
 \l__pdf_internal_box=\box53
-) (./PabloDiazVinambres-XianaCarreraAlonso.aux)
-\openout1 = `PabloDiazVinambres-XianaCarreraAlonso.aux'.
+) (./divideyvenceras.aux)
+\openout1 = `divideyvenceras.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 117.
 LaTeX Font Info:    ... okay on input line 117.
@@ -349,9 +349,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 117.
 LaTeX Info: Redefining \pageref on input line 117.
 LaTeX Info: Redefining \nameref on input line 117.
-(./PabloDiazVinambres-XianaCarreraAlonso.out) (./PabloDiazVinambres-XianaCarreraAlonso.out)
+(./divideyvenceras.out) (./divideyvenceras.out)
 \@outlinefile=\write4
-\openout4 = `PabloDiazVinambres-XianaCarreraAlonso.out'.
+\openout4 = `divideyvenceras.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -428,39 +428,34 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 14
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
 
-{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf, id=69, 469.755pt x 325.215pt>
-File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf Graphic file (type pdf)
-<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>
-Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf  used on input line 388.
+{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5] [6] [7] [8]
+<divideyvenceras_files/figure-latex/dispersion-1.pdf, id=93, 469.755pt x 325.215pt>
+File: divideyvenceras_files/figure-latex/dispersion-1.pdf Graphic file (type pdf)
+<use divideyvenceras_files/figure-latex/dispersion-1.pdf>
+Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersion-1.pdf  used on input line 691.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 388--394
+Underfull \hbox (badness 10000) in paragraph at lines 691--697
 [][]
  []
 
-[4 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>] [5]
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf, id=93, 469.755pt x 325.215pt>
-File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf Graphic file (type pdf)
-<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>
-Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf  used on input line 521.
+[9 <./divideyvenceras_files/figure-latex/dispersion-1.pdf>] [10]
+<divideyvenceras_files/figure-latex/dispersionReg-1.pdf, id=114, 469.755pt x 325.215pt>
+File: divideyvenceras_files/figure-latex/dispersionReg-1.pdf Graphic file (type pdf)
+<use divideyvenceras_files/figure-latex/dispersionReg-1.pdf>
+Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersionReg-1.pdf  used on input line 824.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=94, 469.755pt x 325.215pt>
-File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf Graphic file (type pdf)
-<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>
-Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf  used on input line 526.
+<divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=115, 469.755pt x 325.215pt>
+File: divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf Graphic file (type pdf)
+<use divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf>
+Package pdftex.def Info: divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf  used on input line 829.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (156.2486pt too wide) in paragraph at lines 523--527
+Overfull \hbox (156.2486pt too wide) in paragraph at lines 826--830
 \T1/lmr/m/n/10 anza para los datos al nivel del 99%: [] 
  []
 
-[6 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>]
-Underfull \hbox (badness 2073) in paragraph at lines 541--545
-[]\T1/lmr/m/n/10 A con-tin-uaciÛn, hal-lamos los in-ter-va-los para El piv-ote es ((PASAR A LA-TEX)) beta0.gorro -
- []
-
-[7 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [8]
+[11 <./divideyvenceras_files/figure-latex/dispersionReg-1.pdf>] [12 <./divideyvenceras_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [13]
 
 ! LaTeX Error: Unicode character ùëã (U+1D44B)
                not set up for use with LaTeX.
@@ -469,15 +464,15 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.747 ...ëå. Interpreta los resultados obtenidos.}
+l.1039 ...å. Interpreta los resultados obtenidos.}
                                                    
 Here is how much of TeX's memory you used:
- 11364 strings out of 480260
- 179952 string characters out of 5892356
- 472300 words of memory out of 5000000
+ 11368 strings out of 480260
+ 179330 string characters out of 5892356
+ 488247 words of memory out of 5000000
  29072 multiletter control sequences out of 15000+600000
- 522437 words of font info for 70 fonts, out of 8000000 for 9000
+ 519445 words of font info for 69 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,6n,63p,466b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 60i,6n,63p,444b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 !  ==> Fatal error occurred, no output PDF file produced!
