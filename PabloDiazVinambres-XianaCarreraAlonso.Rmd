@@ -235,17 +235,35 @@ A continuación, hallamos sendos intervalos de confianza para $\beta_0$, $\beta_
 ### $\beta_0$
 El pivote que emplearemos para esta estimación será
 $$
-\frac{\hat\beta_0 - beta0}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n_2}
+\frac{\hat\beta_0 - \beta_0}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n-2}
 $$
 de modo que el intervalo de confianza será:
 $$
-(\hat\beta_0-t_{n-2,\frac{\alpha}{2}} \hat\sigma \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}}, \hat\beta_0+t_{n-2,\frac{\alpha}{2}} \hat\sigma \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}})
+(\hat\beta_0-t_{n-2,\alpha/2}\; \hat\sigma\; \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}}, \quad\hat\beta_0+t_{n-2,\alpha/2}\; \hat\sigma\; \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}})
 $$
 dónde $t_{n-2,\frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2} = 0.995$ de una T de Student con $n-2= 118$ grados de libertad.
+```{r graftstudent, echo = FALSE}
+# Creamos un vector de valores para el eje X
+x_student <- seq(- 5, 5, by = 0.01)
+
+# Le aplicamos la función de densidad a cada punto
+y_tstudent <- dt(x_student, df=n-2)
+
+# Calculamos el cuantil 1-alfa/2
+beta0.cuantil <- qt(1-alfa/2, df=n-2)
+
+# Y representamos
+plot(x_student, y_tstudent, type = "l", 
+     main = "T de Student con 118 grados de libertad", xlab="", ylab="",
+     sub="En rojo se señalan los cuantiles 0.005 y 0.995")
+segments(x0 = beta0.cuantil, y0 = -0.05, x1 = beta0.cuantil, y1=dt(beta0.cuantil, df=n-2) + 0.05, col="red")
+segments(x0 = -beta0.cuantil, y0 = -0.05, x1 = -beta0.cuantil, y1=dt(-beta0.cuantil, df=n-2) + 0.05, col="red")
+```
+
 
 En primer lugar, obtengamos el intervalo de confianza a mano:
 ```{r icbeta0mano}
-beta0.cuantil <- qt(1-alfa/2, df=n-2); beta0.cuantil       # Cuantil 1-alfa/2 de T de Student con n-2 grados de libertad
+# Cuantil 1-alfa/2 de T de Student con n-2 grados de libertad en beta0.cuantil, ya calculado
 beta0.extremoinferior <- beta0.gorro - beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
 beta0.extremosuperior <- beta0.gorro + beta0.cuantil * sqrt(var.error * (1/n + mX^2/(n*var.X)))
 beta0.IC <- c(beta0.extremoinferior, beta0.extremosuperior); beta0.IC      # Intervalo de confianza
@@ -260,12 +278,12 @@ $$
 
 a partir del cuál obtenemos el intervalo:
 $$
-(\hat\beta_1 - t_{n-2, \frac{\alpha}{2}}\frac{\hat{\sigma}}{S_x \sqrt{n}}, \hat\beta_1 + t_{n-2, \frac{\alpha}{2}}\frac{\hat\sigma}{S_x \sqrt{n}})
+(\hat\beta_1 - t_{n-2, \alpha/2}\frac{\hat{\sigma}}{S_x \sqrt{n}}, \hat\beta_1 + t_{n-2, \alpha/2}\frac{\hat\sigma}{S_x \sqrt{n}})
 $$
 
 donde de nuevo $t_{n-2,\frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2} = 0.995$ de una T de Student con $n-2= 118$ grados de libertad.
 
-De nuevo, obtenemos el intervalo a mano:
+Obtenemos el intervalo a mano:
 ```{r icbeta1mano}
 beta1.cuantil <- beta0.cuantil      # Empleamos el mismo cuantil, dado que fijamos el mismo alfa
 beta1.extremoinferior <- beta1.gorro - beta1.cuantil * sqrt(var.error / (var.X * n))
@@ -273,15 +291,15 @@ beta1.extremosuperior <- beta1.gorro + beta1.cuantil * sqrt(var.error / (var.X *
 beta1.IC <- c(beta1.extremoinferior, beta1.extremosuperior); beta1.IC   # Mostramos el intervalo
 ```
 Interpretamos así que, en base a los datos de esta muestra, el intervalo $(-1.1033105, -0.9424673)$ contendrá al parámetro $\beta_1$ con una probabilidad del 99%.
--1.1033105 -0.9424673
+
 
 ### $\sigma^2$
-Por último, para el intervalo de confianza de la varianza del error, usaremos 
+Por último, para el intervalo de confianza de la varianza del error, usaremos el pivote
 
 $$
 \frac{(n-2)\hat{sigma^2}}{\sigma^2} \in \chi^2_{n-2}
 $$
-de dónde obtenemos el intervalo:
+con lo que obtenemos el intervalo:
 $$
 (\frac{(n-2)\hat{\sigma^2}}{\chi^2_{n-2, \frac{\alpha}{2}}}, \frac{(n-2)\hat{\sigma^2}}{\chi^2_{n-2, 1-\frac{\alpha}{2}}})
 $$
@@ -289,10 +307,29 @@ $$
 
 donde $\chi^2_{n-2, \frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2}=0.995$ de una $\chi^2$ con $n-2=118$ grados de libertad, y $\chi^2_{n-2, 1-\frac{\alpha}{2}}$ es el cuantil $\frac{\alpha}{2}=0.005$ de una $\chi^2$ con $n-2=118$ grados de libertad.
 
+```{r grafchi, echo = FALSE}
+# Creamos una sequencia de puntos para el eje X
+x_chi <- seq(75, 180, by=0.01)
+
+# Le aplicamos la función de densidad a cada punto de la secuencia
+y_chi <- dchisq(x_chi, df = n-2)
+
+var.error.cuantilinferior <- qchisq(alfa/2, df = n-2)       # Cuantil alfa/2 de chi-cuadrado con n-2 grados de libertad
+var.error.cuantilinferior
+var.error.cuantilsuperior <- qchisq(1-alfa/2, df = n-2)     # Cuantil 1-alfa/2
+var.error.cuantilsuperior
+
+# Y representamos
+plot(x_chi, y_chi, type = "l", 
+     main = expression(chi[118]^2), xlab="", ylab="",
+     sub="En rojo se señalan los cuantiles 0.005 y 0.995")
+segments(x0 = var.error.cuantilinferior, y0 = -0.05, x1 = var.error.cuantilinferior, y1=dchisq(var.error.cuantilinferior, df=n-2) + 0.05, col="red")
+segments(x0 = var.error.cuantilsuperior, y0 = -0.05, x1 = var.error.cuantilsuperior, y1=dchisq(var.error.cuantilinferior, df=n-2) + 0.05, col="red")
+```
+
+
 Calculamos entonces este intervalo a mano:
 ```{r icvarsmano}
-var.error.cuantilinferior <- qchisq(alfa/2, df = n-2)       # Cuantil alfa/2 de chi-cuadrado con n-2 grados de libertad
-var.error.cuantilsuperior <- qchisq(1-alfa/2, df = n-2)     # Cuantil 1-alfa/2
 var.error.extremoinferior <- (n-2) * var.error^2 / var.error.cuantilsuperior
 var.error.extremosuperior <- (n-2) * var.error^2 / var.error.cuantilinferior
 var.error.IC <- c(var.error.extremoinferior, var.error.extremosuperior); var.error.IC     # Intervalo
@@ -327,33 +364,54 @@ H_a: \beta_1 \neq 0
 \end{cases}
 $$
 
-Si no consiguiéramos demostrar la hipótesis alternativa para el primer contraste, tendríamos que considerar un modelo más sencillo, que no solo facilitaría el análisis estadístico, sino que es más correcto y realista de cara a las interpretaciones que podamos hacer. En el caso del segundo contraste, no demostrar la hipótesis alternativa equivaldría a invalidar nuestro modelo, pues significaría que no hay regresión.
+Si no consiguiéramos demostrar la hipótesis alternativa para el primer contraste, tendríamos que considerar un modelo más sencillo, que no solo facilitaría el análisis estadístico, sino que sería más correcto y realista de cara a las interpretaciones que podamos hacer. En el caso del segundo contraste, no demostrar la hipótesis alternativa equivaldría a invalidar nuestro modelo, pues significaría que no hay regresión.
 
-En primer lugar, calculamos los contrastes de forma manual. Esto se hará a partir de los estadísticos de contraste basados en los pivotes empleados para obtener los intervalos de confianza del ejercicio 3, teniendo en cuenta que, bajo las respectivas hipótesis nulas, $\beta_0 = 0$ y $\beta_1 = 0$:
-```{r signifmano}
+Emplearemos el nivel de significación definido para el análisis: $\alpha = 0.01$.
+
+En primer lugar, calculamos los contrastes de forma manual.
+
+Los estadísticos se construirán a partir de los pivotes empleados para obtener los intervalos de confianza del ejercicio 3, teniendo en cuenta que, bajo las respectivas hipótesis nulas, $\beta_0 = 0$ y $\beta_1 = 0$:
+
+$$
+T_0 = \frac{\hat\beta_0}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n-2}\quad\quad\quad
+T_1 = \frac{\hat{\beta_1}}{\hat\sigma / {S_x \sqrt{n}}} \in T_{n-2}
+$$
+
+Como estamos en un constraste bilateral, rechazaremos la hipótesis nula si los valores absolutos de los estadísticos son superiores al cuantil positivo de la T de Student, esto es,
+$$
+\text{Rechazar } H_0: \beta_0 = 0 \text{ si } T_0 > t_{n-2, \alpha/2}
+PONER EN DOS LÍNEAS
+\text{Rechazar } H_1: \beta_1 = 0 \text{ si } T_1 > t_{n-2, \alpha/2}
+$$
+
+Calculemos ambos estadísticos y comprobemos si están en la región de rechazo o en la de aceptación.
+
+```{r regionrechazo}
 # Cálculo de los valores de los estadísticos de contraste para beta0 y beta1 bajo H0
 beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1 / n + mX ^ 2 / (n * var.X)))); beta0.t
 beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n * var.X)); beta1.t
-```
-DEFINIR LA REGIÓN DE RECHAZO -_-
 
 # Ambos contrastes caen en la región de rechazo
 beta0.t > beta0.cuantil 
 beta1.t > beta1.cuantil
+```
+Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que no existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
-# Calculo de p-valores
+Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula):
+```{r pvalores}
 beta0.pvalor <- dt(beta0.t, df = n-2); beta0.pvalor
 beta1.pvalor <- dt(beta1.t, df = n-2); beta1.pvalor
 ```
-Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que noe existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
-Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^-50$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas para los niveles de significación habituales o incluso con precisiones mucho mayores.
+Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^-50$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas no solo para nuestro $\alpha$, sino también para cualquiera de los niveles de significación habituales o incluso con precisiones mucho mayores.
 
 Alternativamente, podemos obtener los valores de estos dos contrastes de significación y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la función summary:
 ```{r signifauto}
 summary(modelo)
 ```
-En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al valor observado del estadístico de contraste y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente.
+MIRAR SI LOS VALORES A MANO COINCIDEN
+
+En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al valor observado del estadístico de contraste y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2*10^{-16}$), las interpretaciones coincide con las ya expuestas. Rechazamos la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
 
 ## 5) Intervalos de predición y confianza para la media condicionada 
 \textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
@@ -373,12 +431,26 @@ En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$, hallam
 ```{r intmediacond}
 predict(modelo, newdata = nuevosDatos, interval = "confidence", level = alfa)
 ```
-Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de n, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra.
+Los extremos inferiores se encuentran en la columna _lwr_, y los superiores, en _upr_, de forma que $2$ tiene un intervalo asociado $(2.1371613, 2.1399684)$; $4$, $(0.0916848, 0.0938893)$; y $6$, $(-1.9542755, -1.9517059)$. Con los datos de la muestra, los valores de la media condicionada al añadir cada uno de los nuevos valores se encuentrarán en el intervalo respectivo con un 99% de probabilidad.
 
-En R, pasamos el argumento $\texttt{interval = "prediction"}$
+Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de $n$, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra. Aun así, ambos estarán centrados en el mismo punto, el valor correspondiente en la columna _fit_, que es el valor del estadístico asociado a la construcción del intervalo por el método pivotal.
+
+
+CALCULAR A MANO (ESTÁN EN LOS APUNTES)
+
+Para la predicción, pasamos el argumento $\texttt{interval = "prediction"}$
 ```{r intprediccion}
 predict(modelo, newdata = nuevosDatos, interval = "prediction", level = alfa)
 ```
+
+OBTENEMOS LOS INTERVALOS_ PONER:
+
+Los valores estimados de la media condicional y de los valores de la variable Y, que se pueden comprobar en la columna _fit_, coinciden, puesto que su cálculo es el mismo:
+```{r fit}
+beta0.gorro + beta1.gorro*nuevosDatos
+```
+
+
 ## Ejercicio 6 
 \textit{Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado.}
 El objetivo del cálculo de una medida de bondad de ajuste es determinar como de "bueno" o "potente" es un modelo de regresión. En terminos estadísticos, esto se traduce a cuánta proporción de la variabilidad de $Y$ puede ser explicada por el modelo de regresión. Una de las medidas principales para lograr este objetivo es el \textit{coeficiente de determinación $R^2$}. En el caso del modelo lineal, podemos descomponer la varianza como
@@ -387,7 +459,7 @@ $$
 \sigma_Y^2 = 
 \sum_{i=1}^n (Y_i - \overline{Y})^2 = 
 \sum_{i=1}^n (Y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2 + 
-\sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}\cx_i - \overline{Y})^2
+\sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}x_i - \overline{Y})^2
 $$
 
 Dónde observamos que el segundo sumando representa la varianza explicada por la recta de regresión, mientras que el primero representa la no explicada. Es por tanto necesario que el cociente $\frac{RSS}{TSS}$, dónde TSS (\textit{Total Sum of Squares}) es la varianza total de $Y$ y RSS (\textit{Residual Sum of Squares}) es la no explicada por el modelo, sea lo menor posible.
@@ -606,13 +678,16 @@ n
 ### Independencia
 De entre las 4 hipótesis con las que trabaja el modelo, la independencia de los errores es la más difícil de corroborar. No tenemos información acerca del proceso de recogida de muestras, por lo que no podemos garantizarla en base a que los datos hayan sido medidos sobre objetos o individuos de forma independiente.
 
-Debido a la complejidad inherente a este apartado, nos limitaremos a comprobar la independencia temporal. Para ello, asumiremos que nuestros datos han sido medidos a lo largo del tiempo. 
+Debido a la complejidad inherente a este apartado, nos limitaremos a comprobar la independencia temporal. Realizamos un constraste de correlación temporal y, si los errores estén incorrelacionados, dado que ya hemos visto que también siguen una distribución normal, podremos deducir que son independientes. 
+
+Asumiremos que nuestros datos han sido medidos a lo largo del tiempo, de forma que tiene sentido realizar el contraste mencionado.
 
 Nos preguntamos entonces si existe algún tipo de relación entre las observaciones, esto es:
 $$
 \begin{cases}
-H_0: \epsilon\text{ son incorrelacionados}\\
-H_a: \epsilon\text{ son correlacionados de orden k}
+H_0: \epsilon\text{ son incorrelacionados temporalmente}\\
+H_a: \epsilon\text{ son correlacionados temporalmente de orden k}
 \end{cases}
 $$
-En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Así, fijado un k y dados unos errores 
+En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Realizaremos un test _Ljung-Box_ con la función \texttt{Box.test}, para lo cual tendremos que fijar un k de antemano. Dado que probar todos los valores sería imposible, nos limitaremos a $k = 1, 2$ y 3. 
+Box.test(res.estan, type = "Ljung-Box", lag=2) 
