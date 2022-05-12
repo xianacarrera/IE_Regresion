@@ -28,7 +28,7 @@ $$
 donde $\epsilon_1,...,\epsilon_n \in N(0, \sigma^2)$ y son independientes.
 
 
-Este modelo presenta 3 parámetros: $\beta_0$, el valor inicial de la media de la variable respuesta cuando X es 0 (es decir, la ordenada en el origen de la recta); $\beta_1$, la cantidad en la que crece dicha media cada vez que X se incrementa en una unidad (la pendiente); y $\sigma^2$, la varianza del error (por hipótesis de homocedasticidad, toma un valor fijo para cualquier valor x de la variable explicativa).
+Este modelo presenta 3 parámetros: $\beta_0$, el valor inicial de la media de la variable respuesta cuando X es 0 (es decir, la ordenada en el origen de la recta de regresión asociada al modelo); $\beta_1$, la cantidad en la que crece dicha media cada vez que X se incrementa en una unidad (la pendiente de la recta); y $\sigma^2$, la varianza del error (que, por hipótesis de homocedasticidad, toma un valor fijo para cualquier valor x de la variable explicativa).
  
 # Cuestiones preliminares 
 En cada una de las secciones del documento se trabajará con \textbf{$\alpha = 0.01$} para los distintos contrastes, intervalos de confianza, etc. planteados. Equivalentemente, se empleará un nivel de significación $1 - \alpha = 0.99$. 
@@ -39,13 +39,13 @@ nivel <- 1 - alfa
 nivel
 ```
 
-Esta elección se debe al enunciado del ejercicio 3, dónde se pide emplear un nivel de significación del 99% para la construcción de intervalos de confianza de los parámetros del modelo. Para mantener entonces la consistencia en todo el informe, se decidió conservarlo en los demás apartados que lo requieren.
+Esta elección se debe al enunciado del ejercicio 3, donde se pide emplear un nivel de significación del 99% para la construcción de intervalos de confianza de los parámetros del modelo. Para mantener entonces la consistencia en todo el informe, se decidió conservarlo en los demás apartados que lo requieren.
 
 
 ## Librerías utilizadas
 Cargamos a continuación todas las librerías que utilizaremos a lo largo de la ejecución. Si alguno de los paquetes no ha sido previamente instalado, debe ejecutarse la instrucción \texttt{install.packages("nombre\_del\_paquete")}.  
 
-```{r librerias, echo = FALSE}
+```{r librerias, results='hide'}
 # Para instalar: install.packages("paquete_de_ejemplo")
 library(ggplot2) # Para diagrama de dispersión con región de confianza
 library(rpanel) # Controles adicionales en sm.regression
@@ -59,7 +59,7 @@ library(lmtest) # Test de Harrison-McCabe (contraste de homocedasticidad)
 ## Lectura de datos
 En primer lugar, leemos los datos del archivo proporcionado, que cuenta con 76 variables respuesta, Y1, ..., Y76, y una variable explicativa común, X. En nuestro caso, limitaremos el estudio a Y47, que denotaremos sencillamente como Y de aquí en adelante.
 
-Nada más importar el archivo (para lo cual es necesario que el usuario cambie el directorio actual, empleando, por ejemplo, \texttt{setwd} o \texttt{Ctrl + May + H}), realizamos un pequeño análisis descriptivo de los datos empleando las funciones estándar \texttt{head}, \texttt{class}, \texttt{names}, \texttt{str} y \texttt{summary}.
+Nada más importar el archivo (para lo cual es necesario que el usuario cambie el directorio actual, empleando, por ejemplo, \texttt{setwd} o \texttt{Ctrl + May + H}), realizamos un pequeño análisis descriptivo de los datos empleando las funciones estándar \texttt{head}, \texttt{class}, \texttt{names}, \texttt{str} y \texttt{summary}. También comprobaremos la varianza y desviación típica de las variables y representaremos un histograma y un boxplot para ver su estructura general.
 
 Por comodidad para cálculos posteriores, también guardamos el número de datos, n.
 
@@ -104,9 +104,11 @@ sqrt(var(X) * (n - 1) / n) # Desviación típica de X
 sqrt(var(Y) * (n - 1) / n) # Desviación típica de Y
 
 par(mfrow = c(1, 2)) # Gráficos dispuestos en 1 fila con 2 columnas
+
+# Utilizamos viridis para crear un gradiente de colores
 hist(Y, col = viridis(7),
         main = "Histograma de la variable respuesta", cex.main = 1)
-rug(Y)
+rug(Y)  # Concentración de los puntos de X
 boxplot(Y, col = "gray",
         main = "Diagrama de caja de la variable respuesta", cex.main = 0.75)
 
@@ -118,7 +120,7 @@ Podemos destacar los valores más relevantes del análisis exploratorio. Vemos q
 \begin{gather*}
 \overline{x} = \frac{1}{n} \sum_{i=1}^n x_i = 4.268 \;\;\text{unidades de X}, \quad \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i = -0.1815 \;\;\text{unidades de Y} \\
 S_x^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \overline{x}) = 2.844383  \;\;\text{(unidades de X)}^2, \quad S_Y^2 = \frac{1}{n}\sum_{i=1}^n (Y_i - \overline{Y}) = 9.365897  \;\;\text{(unidades de Y)}^2  \\
-S_x = \sqrt{S_x^2} = 2.844383, \quad S_Y = \sqrt{S_Y^2} = 3.060375 \\
+S_x = \sqrt{S_x^2} = 2.844383 \;\;\text{unidades de X}, \quad S_Y = \sqrt{S_Y^2} = 3.060375 \;\;\text{unidades de Y}\\
 \end{gather*}
 
 Varios de estos valores, como la media o la varianza, nos serán de interés a lo largo del ajuste del modelo de regresión, y volveremos a ellos en puntos posteriores. 
@@ -144,7 +146,7 @@ Adionalmente, ya podemos anticipar que la mencionada recta de regresión será d
 
 Por un razonamiento análogo, $r_{xY}$ también debe tener el mismo signo que $S_{xY}$ y, en efecto, esto es lo que observamos en los resultados. La interpretación de su signo es, por tanto, la misma que la expuesta para la covarianza (relación lineal inversa/indirecta).
 
-Ahora bien, no podemos sacar conclusiones acerca de la magnitud de la covarianza, pues esta tiene unidades (que ni siquiera conocemos). Por el contrario, el coeficiente de correlación es adimensional y, de hecho, sabemos que $|r_{xY}| \in [-1,1]$. Como $|r_{xY}| > 0.75$, la relación entre las variables es fuerte, esto es, tienen una correlación significativa. Cuando representemos el diagrama de dispersión de los datos y sobre el mismo, la recta de regresión, observaremos que los puntos son próximos a esta.
+Ahora bien, no podemos sacar conclusiones acerca de la magnitud de la covarianza, pues esta tiene unidades (que ni siquiera conocemos). Por el contrario, el coeficiente de correlación es adimensional y, de hecho, sabemos que $r_{xY} \in [-1,1]$. Como $|r_{xY}| > 0.75$, la relación entre las variables es fuerte. Esto es, tienen una correlación significativa. Cuando representemos el diagrama de dispersión de los datos y sobre el mismo, la recta de regresión, observaremos que los puntos son próximos a esta.
 
 ### Representación gráfica
 Para visualizar la relación entre la variable explicativa y la variable respuesta, emplearemos un diagrama de dispersión. 
@@ -158,9 +160,9 @@ mY <- mean(Y) # Media de Y
 c(mX, mY) # Mostramos el vector de medias
 ```
 
-Como diagrama básico, emplearemos la función \texttt{plot}. Como recurriremos a este gráfico en particular en varias ocasiones a lo largo de este documento, vamos a definir una función que englobe la representación: \\
+Como diagrama básico, emplearemos la función \texttt{plot}. Como recurriremos a este gráfico en particular en varias ocasiones a lo largo de este documento, vamos a definir una función que englobe la representación: 
 
-```{r dispersion, echo = FALSE, fig.align='center'}
+```{r dispersion, fig.align='center'}
 representar <- function() {
         plot(X, Y,
           main = "Diagrama de dispersión", pch = 16,
@@ -206,9 +208,9 @@ A continuación aparece información descriptiva sobre los residuos. Podemos des
 Después se muestra información acerca de los coeficientes del modelo ($\beta_0$ y $\beta_1$), que obtendremos en el ejercicio 2. Por columnas, se indican:
 \begin{enumerate}
   \item \texttt{estimate}: los valores estimados del modelo.
-  \item \texttt{std. error}: el error típico estimado para el intercepto y para la pendiente, respectivamente.
-  \item \texttt{t value}: el cociente entre la columna \texttt{estimate} y la columna \texttt{std. error}.
-  \item \texttt{p value}: el p-valor de los contrastes de signifcación asociados.
+  \item \texttt{std.} \texttt{error}: el error típico estimado para el intercepto y para la pendiente, respectivamente.
+  \item \texttt{t value}: el cociente entre la columna \texttt{estimate} y la columna \texttt{std.} \texttt{error}.
+  \item \texttt{p value}: el p-valor de los contrastes de significación asociados.
 \end{enumerate}
 
 En las últimas líneas se indica el \texttt{residual standard error}, que es la desviación típica del error, junto con los grados de la chi-cuadrado asociada a la varianza del error ($n-2 = 118$). Después nos aparece el coeficiente de determinación ($0.9038$) y el coeficiente de determinación ajustado. Este último no nos será de especial interés, al ser este un modelo simple y no múltiple. Por último, se muestra el valor del estadístico de contraste del F-test ($1109$), que es equivalente al test de significación de la pendiente. La F de Snédecor empleada es de 1 grado de libertad en el numerador y 118 en el denominador, y el p-valor asociado es muy próximo a 0 ($<2.2\cdot10^{-16}$). Veremos que esto demuestra que el parámetro de la pendiente es significativo.
@@ -221,7 +223,7 @@ Para la estimación puntual de los parámetros intercepto $\beta_0$, pendiente $
 \begin{gather*}
 \hat{\beta_0} = \overline{Y} - \frac{S_{xY}}{s^2_x}\overline{x} \\
 \hat{\beta_1} = \frac{S_{xY}}{s^2_x} \\
-\hat{\sigma}^2 = \frac{1}{n-2} \cdot \sum_{1}^{n} (Y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2 \\
+\hat{\sigma}^2 = \frac{1}{n-2} \cdot \sum_{i=1}^{n} (Y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2 \\
 \end{gather*}
 
 Veamos a través de R cuáles son sus valores:
@@ -255,14 +257,14 @@ $$
 $$
 así como la expresión alternativa de la varianza del error:
 $$
-\hat{\sigma}^2 = \frac{1}{n-2} \cdot \sum_{1}^{n} \hat\epsilon_i^2
+\hat{\sigma}^2 = \frac{1}{n-2} \cdot \sum_{i=1}^{n} \hat\epsilon_i^2
 $$
 
 Vemos que nuestros cálculos coinciden con los obtenidos por R, ya que las fórmulas empleadas son las mismas.
 
 A continuación, en base a la representación definida anteriormente, añadimos la recta de regresión ajustada del modelo:
 
-```{r dispersionReg, echo=FALSE, fig.align='center'}
+```{r dispersionReg, fig.align='center'}
 # Llamamos a la función que crea el diagrama de dispersión de Y sobre X
 representar()
 # Añadimos la recta de regresión
@@ -271,7 +273,7 @@ abline(modelo, col = "red", lwd = 2)
 
 Incluimos también una gráfica adicional usando la librería \texttt{ggplot2} e incluyendo la región
 o intervalo de confianza para los datos al nivel fijado del 99%:
-```{r,fig.align='center', echo=FALSE}
+```{r,fig.align='center'}
 ggplot(datos, aes(x = X, y = Y)) +
         geom_point() +
         geom_smooth(formula = y ~ x, level = 0.99, method = lm,
@@ -281,6 +283,15 @@ ggplot(datos, aes(x = X, y = Y)) +
                 x = "Variable explicativa",
                 title = "Modelo lineal simple, con región de confianza al 99%"
         )
+```
+
+Podemos representar también la relación entre los valores de Y y las estimaciones que da para cada uno de ellos el modelo (los $\tilde{Y}$). La aproximación será mejor cuanto menos se distancien los puntos de la diagonal, pues esta es la representación de $Y = \tilde{Y}$, que es lo que ocurriría en el hipótetico caso de que el modelo no tuviera error. Cabe destacar que este gráfico nos sirve como una medida de bondad de ajuste del modelo, ya que nos indica si este es adecuado o no.
+
+```{r, fig.align='center', echo=FALSE}
+Y.gorro = modelo$fitted.values         # Valores de Y estimados por el modelo
+
+plot(Y~Y.gorro, pch = 19, xlab="Valores estimados", ylab = "Y")
+abline(lm(Y~Y.gorro), col="red")       # Diagonal (regresión entre Y e Y.gorro)
 ```
 
 ## 3) Intervalos de confianza de los parámetros del modelo
@@ -297,7 +308,7 @@ $$
 (\hat\beta_0-t_{n-2,\alpha/2}\; \hat\sigma\; \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}}, \quad\hat\beta_0+t_{n-2,\alpha/2}\; \hat\sigma\; \sqrt{\frac{1}{n} +\frac{\overline{x}^2}{nS_x^2}})
 $$
 dónde $t_{n-2,\frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2} = 0.995$ de una T de Student con $n-2= 118$ grados de libertad.
-```{r graftstudent, echo = FALSE, fig.align='center'}
+```{r graftstudent, fig.align='center'}
 # Creamos un vector de valores para el eje X
 x_student <- seq(-5, 5, by = 0.01)
 
@@ -373,9 +384,9 @@ $$
 $$
 
 
-donde $\chi^2_{n-2, \frac{\alpha}{2}}$ es el cuantil $1-\frac{\alpha}{2}=0.995$ de una $\chi^2$ con $n-2=118$ grados de libertad, y $\chi^2_{n-2, 1-\frac{\alpha}{2}}$ es el cuantil $\frac{\alpha}{2}=0.005$ de una $\chi^2$ con $n-2=118$ grados de libertad.
+donde $\chi^2_{n-2, \alpha/2}$ es el cuantil $1-\frac{\alpha}{2}=0.995$ de una $\chi^2$ con $n-2=118$ grados de libertad, y $\chi^2_{n-2, 1-\alpha/2}$ es el cuantil $\frac{\alpha}{2}=0.005$ de una $\chi^2$ con $n-2=118$ grados de libertad.
 
-```{r grafchi, echo = FALSE, fig.align='center'}
+```{r grafchi, fig.align='center'}
 # Creamos una sequencia de puntos para el eje X
 x_chi <- seq(75, 180, by = 0.01)
 
@@ -421,12 +432,13 @@ confint(modelo, level = 0.99)
 Vemos que los valores obtenidos coinciden con los extremos del intervalo que calculábamos anteriormente, pues R emplea la misma construcción que hemos visto de forma teórica.
 
 Todos los intervalos de confianza aquí obtenidos tienen carácter aleatorio. De cada 100 intervalos así obtenidos, 
-99 contendrían al parámetro asociado. No hay ninguna función estándar para la automatización del intervalo de confianza para la varianza del error.
+99 contendrían al parámetro asociado. 
+
+No hay ninguna función estándar para la automatización del intervalo de confianza para la varianza del error.
 
 ## 4) Contrastes de significación asociados al intercepto y a la pendiente
-\textit{Realiza los contrates de significación asociados al intercepto y a la pendiente del modelo de regresión considerado. Interpreta los resultados obtenidos. En base a los resultados obtenidos, ¿tendría sentido considerar otro modelo más sencillo?}
 
-A continuación, realizaremos los contrastes de significación sobre los parámetros $\hat{\beta_0}$ y $\hat{\beta_1}$ con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no. Las hipótesis de estos contrastes son, respectivamente:
+A continuación, realizaremos los contrastes de significación sobre los parámetros $\hat{\beta_0}$ y $\hat{\beta_1}$ con el objetivo de determinar si el modelo se podría simplificar a uno con menos variables o no, y si el modelo de regresión tiene sentido, respectivamente. Las hipótesis de estos contrastes son pues:
 $$
 \begin{cases}
 H_0: \beta_0 = 0\\
@@ -457,8 +469,8 @@ $$
 Como estamos en un contraste bilateral, rechazaremos la hipótesis nula si los valores absolutos de los estadísticos son superiores al cuantil positivo de la T de Student, esto es,
 
 \begin{gather*}
-\text{Rechazar } H_0: \beta_0 = 0 \text{ si } T_0 > t_{n-2, \alpha/2} \\
-\text{Rechazar } H_1: \beta_1 = 0 \text{ si } T_1 > t_{n-2, \alpha/2} \\
+\text{Rechazar } H_0: \beta_0 = 0 \text{ si } |T_0| = \frac{|\hat\beta_0|}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n-2} > t_{n-2, \alpha/2} \\
+\text{Rechazar } H_1: \beta_1 = 0 \text{ si } |T_1| = \frac{|\hat{\beta_1}|}{\hat\sigma / {S_x \sqrt{n}}} > t_{n-2, \alpha/2} \\
 \end{gather*}
 
 Calculemos ambos estadísticos y comprobemos si están en la región de rechazo o en la de aceptación.
@@ -478,26 +490,25 @@ abs(beta1.t) > beta1.cuantil
 
 Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que no existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de $H_0$. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
-Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula):
+Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula), como $\mathbb{P}(|T| > T_0)$ y $P$ y del área que queda a la derecha de los estadísticos. Cogemos el área derecha al ser ambos estadísticos positivos. Además, tendremos que multiplicar ambas probabilidades por 2, al estar considerando un contraste bilateral.
 ```{r pvalores}
-beta0.pvalor <- dt(beta0.t, df = n - 2)
+beta0.pvalor <- 2*(1-pt(beta0.t, df = n - 2))
 beta0.pvalor
-beta1.pvalor <- dt(beta1.t, df = n - 2)
+beta1.pvalor <- 2*(1-pt(beta1.t, df = n - 2))
 beta1.pvalor
 ```
 
-Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^{-50}$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas no solo para nuestro $\alpha$, sino también para cualquiera de los niveles de significación habituales o incluso con precisiones mucho mayores.
+Como vemos, en ambos contrastes el p-valor es nulo (prácticamente nulo), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas no solo para nuestro $\alpha$, sino también para cualquiera de los niveles de significación habituales o incluso con precisiones mucho mayores.
 
 Alternativamente, podemos obtener los valores de estos dos contrastes de significación y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la función summary:
 ```{r signifauto}
 summary(modelo)
 ```
-En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al cociente entre la columna \texttt{estimate} y la columna \texttt{std.error} (el valor observado del estadístico de contraste) y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2\cdot10^{-16}$), las interpretaciones coincide con las ya expuestas. Rechazamos entonces la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
+En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al cociente entre la columna \texttt{estimate} y la columna \texttt{std.error} (el valor observado del estadístico de contraste) y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2\cdot10^{-16}$, menor que nuestro nivel de significación), las interpretaciones coinciden con las ya expuestas. Rechazamos entonces la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
 
 ## 5) Intervalos de confianza para la predicción sobre nuevos datos
-\textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
 
-En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Para obtener intervalos de confianza para la esperanza de Y condicionada a estos valores y de predicción, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.  
+En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Obtendremos intervalos de confianza para la media condicionada de Y e intervalos de predicción. Para ello, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.  
 
 ```{r validacionnuevosdatos}
 nuevosValores <- c(2, 4, 6); nuevosValores
@@ -507,7 +518,7 @@ min(X) < min(nuevosValores) && max(X) > max(nuevosValores)
 nuevosDatos <- data.frame("X" = nuevosValores)
 ```
 
-Habiendo realizado esta comprobación, ya podemos obtener los intervalos indicados, que se calcularán para el nivel de significación fijado anteriormente $\alpha = 0.01$. En primer lugar, hallaremos los intervalos de confianza para la media condicionada utilizando el estimador $\tilde{Y}_0 = \hat{\beta_0} + \hat{\beta_1}x_0 = \overline{Y} + \hat{\beta_1}(x_0 - \overline{x})$, que es insesgado para $\mathbb{E}[Y|X=x_0]$ y tiene varianza 
+Habiendo realizado esta verificación, ya podemos obtener los intervalos indicados, que se calcularán para el nivel de significación fijado anteriormente $\alpha = 0.01$. En primer lugar, hallaremos los intervalos de confianza para la media condicionada utilizando el estimador $\tilde{Y}_0 = \hat{\beta_0} + \hat{\beta_1}x_0 = \overline{Y} + \hat{\beta_1}(x_0 - \overline{x})$, que es insesgado para $\mathbb{E}[Y|X=x_0]$ y tiene varianza 
 
 $$
 \text{Var}(\tilde{Y}_0) = \frac{\sigma^2}{n_0}, \:\text{dónde} \:\: n_0 = \frac{n}{1+\frac{(x_0-\overline{x})^2}{S^2_x}}
@@ -556,7 +567,7 @@ Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios q
 En este caso, plantearemos en cómo se aproxima $\tilde{Y_0}$ a la nueva observación $Y = \beta_0 + \beta_1 x_0 + \epsilon$. Aquí tenemos que $\mathbb{E}[\tilde{Y_0}] = \mathbb{E}[Y_0]$ y $Var(\tilde{Y_0} - Y_0) = \sigma^2 (1 + \frac{1}{n_0})$, de dónde tenemos el intervalo de confianza para la nueva observación $Y_0$:
 
 $$
-(\tilde{Y}_0 - t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}}, \tilde{Y}_0 + t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}})
+(\tilde{Y}_0 - t_{n-2, \alpha/2} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}}, \tilde{Y}_0 + t_{n-2, \alpha/2} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}})
 $$
 calculamos entonces estos intervalos para cada nuevo dato:
 ```{r intprediccionmano}
@@ -585,8 +596,7 @@ Los valores estimados de la media condicional y de los valores de la variable Y,
 nuevosValores.y0tilde
 ```
 
-## Ejercicio 6 
-\textit{Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado.}
+## 6) Cálculo de una medida de bondad de ajuste del modelo lineal simple considerado
 
 El objetivo del cálculo de una medida de bondad de ajuste es determinar como de "bueno" o "potente" es un modelo de regresión. En terminos estadísticos, esto se traduce a cuánta proporción de la variabilidad de $Y$ puede ser explicada por el modelo de regresión. Una de las medidas principales para lograr este objetivo es el \textit{coeficiente de determinación $R^2$}. En el caso del modelo lineal, podemos descomponer la varianza como
 
@@ -597,7 +607,8 @@ $$
 \sum_{i=1}^n (\hat{\beta_0} + \hat{\beta_1}x_i - \overline{Y})^2
 $$
 
-Dónde observamos que el segundo sumando representa la varianza explicada por la recta de regresión, mientras que el primero representa la no explicada. Es por tanto necesario que el cociente $\frac{RSS}{TSS}$, dónde TSS (\textit{Total Sum of Squares}) es la varianza total de $Y$ y RSS (\textit{Residual Sum of Squares}) es la no explicada por el modelo, sea lo menor posible.
+Observamos que el segundo sumando representa la varianza explicada por la recta de regresión, mientras que el primero representa la no explicada. Es por tanto necesario que el cociente $\frac{RSS}{TSS}$, donde TSS (\textit{Total Sum of Squares}) es la varianza total de $Y$ y RSS (\textit{Residual Sum of Squares}) es la no explicada por el modelo, sea lo menor posible.
+
 Definimos entonces el coeficiente de determinación $R^2 = 1 - \frac{RSS}{TSS}$. En primer lugar, calcularemos este cociente a mano:
 
 ```{r coefdeterman}
@@ -607,23 +618,22 @@ tss <- var(Y)
 r2 <- 1 - rss / tss
 r2
 ```
-Aunque también podemos obtenerla a partir del modelo de R, en el campo \textit{Adjusted R-Squared} del \texttt{summary}:
+Aunque también podemos obtenerla a partir del modelo de R, en el campo \textit{Multiple R-Squared} del \texttt{summary}:
 ```{r coefdeterauto}
 summary(modelo)
 ```
-Obtenemos un valor de $0.903$, lo cuál nos indica que nuestro modelo es bastante potente en términos habituales. Cabe destacar que el hecho de que el coeficiente de determinación sea alto, no nos indica aún que nuestro modelo sea correcto, lo cuál será discutido en el apartado 7. El recíproco tampoco es cierto, podríamos tener un modelo correcto que no fuera bueno. Intuitivamente, este valor alto se contrasta con el hecho de que en el diagrama de dispersión los datos sean cercanos a la recta de regresión.
+Obtenemos un valor de $0.9038$, lo cual nos indica que nuestro modelo es bastante potente en términos habituales. Cabe destacar que el hecho de que el coeficiente de determinación sea alto, no nos indica aún que nuestro modelo sea correcto, lo cual será discutido en el apartado 7. El recíproco tampoco es cierto, podríamos tener un modelo correcto que no fuera bueno. Intuitivamente, este valor alto se contrasta con el hecho de que en el diagrama de dispersión los datos sean cercanos a la recta de regresión.
 
-## Ejercicio 7
-\textit{Completa la validación del modelo de regresión lineal simple, contrastando las cuatro hipótesis básicas asociadas al mismo: linealidad, homocedasticidad, normalidad e independencia. Apoya los resultados obtenidos con representaciones gráficas. En base a los resultados obtenidos, ¿qué puedes decir sobre el modelo de regresión considerado?}
+## 7) Validación del modelo de regresión lineal simple. Estudio de linealidad, homocedasticidad, normalidad e independencia.
 
 Las técnicas de inferencia empleadas hasta el momento son ciertas bajo el supuesto de que las 4 hipótesis del modelo de regresión lineal simple (linealidad, homocedasticidad, normalidad e independencia) se verifican. De lo contrario, no todas las interpretaciones obtenidas seguirían siendo válidas. Por ejemplo, si no se cumplieran las hipótesis de homocedasticidad, normalidad e independencia, los intervalos de confianza que hemos obtenido no serían válidos.
 
-Bastaría que fallara una de las cuatro hipótesis para afirmar que el modelo de regresión lineal simple no es un buen modelo para la muestra de datos.
+Bastaría que fallara una de las cuatro hipótesis para afirmar que el modelo de regresión lineal simple no es un modelo correcto para la muestra de datos.
 
 ### Linealidad
 En primer lugar, podemos tratar de aventurar si se los datos siguen una tendencia lineal. Emplearemos una aproximación exploratoria, a través de una interpretación gráfica. Para ello, revisitemos la representación previamente definida.
 
-```{r dispersion2, echo=FALSE}
+```{r dispersion2}
 representar()
 abline(modelo, col = "red", lwd = 2)
 ```
@@ -702,7 +712,7 @@ Var(\epsilon | X = x) = \sigma^2 \quad \forall x
 $$
 
 Contrapongamos ahora los residuos del modelo a la variable explicativa. Se muestra también el diagrama de dispersión original:
-```{r dispersionresiduos, echo = FALSE, fig.align='center'}
+```{r dispersionresiduos, fig.align='center'}
 par(mfrow = c(1, 2))
 
 representar()
@@ -712,7 +722,8 @@ residuos <- modelo$residuals
 
 plot(X, residuos,
         main = "Diagrama de dispersión", pch = 16,
-        sub = "Residuos del modelo"
+        sub = "Relación entre la variable explicativa y los residuos del modelo",
+        ylab = "Residuos"
 )
 abline(h = 0, col = "gray", lwd = 2)
 
@@ -745,7 +756,7 @@ Para corroborar que el error tiene distribución normal, haremos varias represen
 
 Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería \texttt{car}), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
 
-```{r representacionnormalidad, echo = FALSE, fig.align='center'}
+```{r representacionnormalidad, fig.align='center'}
 residuos.estan <- rstandard(modelo)
 
 par(mfrow = c(1, 3))
@@ -755,13 +766,15 @@ hist(residuos.estan,
         viridis(n = 1, begin = 1),
         viridis(n = 5, begin = 0.8, end = 0)),
         main = "Histograma de los residuos estandarizados",
+        xlab = "Residuos estandarizados",
+        ylab = "Frecuencias absolutas",
         cex.main = 0.75
 )
 rug(residuos.estan)
 
-boxplot(residuos.estan, col = "gray")
+boxplot(residuos.estan, col = "gray", main = "Diagrama de caja")
 
-qqPlot(residuos.estan)
+qqPlot(residuos.estan, main = "Diagrama cuantil-cuantil", ylab = "Residuos estandarizados", xlab = "Residuos teóricos")
 ```
 
 En el histograma podemos apreciar una cierta asimetría hacia la derecha (valores más altos). En el boxplot o diagrama de caja vemos que la media está centrada en el centro de la caja, un buen indicador. No obstante, la cola izquierda es de una longitud ligeramente mayor, lo cual es indicativo de la asimetría mencionada, al estar los datos más concentrados alrededor de valores más altos.
