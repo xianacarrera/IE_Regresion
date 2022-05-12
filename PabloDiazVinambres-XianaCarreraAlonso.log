@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  12 MAY 2022 01:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.10)  12 MAY 2022 10:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -434,7 +434,7 @@ Overfull \hbox (48.18648pt too wide) in paragraph at lines 203--207
  []
 
 [2] [3]
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf, id=94, 469.755pt x 325.215pt>
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf, id=114, 469.755pt x 325.215pt>
 File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf Graphic file (type pdf)
 <use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf>
 Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/cars-1.pdf  used on input line 428.
@@ -444,13 +444,13 @@ Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-late
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 515.
 
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf, id=111, 469.755pt x 325.215pt>
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf, id=131, 469.755pt x 325.215pt>
 File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf Graphic file (type pdf)
 <use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>
 Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf  used on input line 541.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [6] [7 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion-1.pdf>] [8]
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf, id=136, 469.755pt x 325.215pt>
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf, id=156, 469.755pt x 325.215pt>
 File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf Graphic file (type pdf)
 <use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>
 Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf  used on input line 698.
@@ -460,7 +460,7 @@ Overfull \hbox (53.05399pt too wide) in paragraph at lines 696--699
 \T1/lmr/m/n/10 del mod-elo: [] 
  []
 
-<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=137, 469.755pt x 325.215pt>
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf, id=157, 469.755pt x 325.215pt>
 File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf Graphic file (type pdf)
 <use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>
 Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf  used on input line 703.
@@ -470,32 +470,67 @@ Overfull \hbox (182.6373pt too wide) in paragraph at lines 700--704
 \T1/lmr/m/n/10 anza para los datos al nivel fi-jado del 99%: [] 
  []
 
-[9 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>] [10 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [11] [12]
-Overfull \hbox (1960.98792pt too wide) in paragraph at lines 929--929
-[]\T1/lmtt/m/n/10 Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que noe existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.[] 
+[9 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionReg-1.pdf>]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/graftstudent-1.pdf, id=168, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/graftstudent-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/graftstudent-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/graftstudent-1.pdf  used on input line 723.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[10 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionRegGGPLOT-1.pdf>] [11 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/graftstudent-1.pdf>]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/grafchi-1.pdf, id=196, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/grafchi-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/grafchi-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/grafchi-1.pdf  used on input line 805.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[12] [13 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/grafchi-1.pdf>]
+
+LaTeX Warning: Command \' invalid in math mode on input line 897.
+
+[14] [15] [16] [17]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf, id=233, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf  used on input line 1258.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[18] [19 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersion2-1.pdf>] [20]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf, id=255, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf  used on input line 1388.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf, id=256, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf  used on input line 1415.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+
+Overfull \hbox (85.44307pt too wide) in paragraph at lines 1413--1416
+\T1/lmr/m/n/10 dis-per-sión orig-i-nal: [] 
  []
 
-
-Overfull \hbox (926.74092pt too wide) in paragraph at lines 929--929
-[]\T1/lmtt/m/n/10 Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^-50$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas para los niveles de significación habituales o incluso con precisiones mucho mayores.[] 
- []
-
-
-Overfull \hbox (527.74208pt too wide) in paragraph at lines 929--929
-[]\T1/lmtt/m/n/10 Alternativamente, podemos obtener los valores de estos dos contrastes de significación y su p-valor a partir de los datos presentes en el modelo de R. Para esto, usaremos la función summary:[] 
- []
-
-[13]
-! Undefined control sequence.
-l.1056 ...i=1}^n (\hat{\beta_0} + \hat{\beta_1}\cx
-                                                  _i - \overline{Y})^2 
+[21 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/smregresion-1.pdf>] [22 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/dispersionresiduos-1.pdf>]
+<PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf, id=279, 469.755pt x 325.215pt>
+File: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf Graphic file (type pdf)
+<use PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf>
+Package pdftex.def Info: PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf  used on input line 1476.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[23 <./PabloDiazVinambres-XianaCarreraAlonso_files/figure-latex/representacionnormalidad-1.pdf>] [24] [25] (./PabloDiazVinambres-XianaCarreraAlonso.aux)
+Package rerunfilecheck Info: File `PabloDiazVinambres-XianaCarreraAlonso.out' has not changed.
+(rerunfilecheck)             Checksum: B7447813898115C6F75FE1D21557A60A;3994.
+ ) 
 Here is how much of TeX's memory you used:
- 11401 strings out of 480260
- 181153 string characters out of 5892356
- 473781 words of memory out of 5000000
- 29091 multiletter control sequences out of 15000+600000
+ 11476 strings out of 480260
+ 184737 string characters out of 5892356
+ 473973 words of memory out of 5000000
+ 29137 multiletter control sequences out of 15000+600000
  526060 words of font info for 73 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  60i,9n,63p,521b,466s stack positions out of 10000i,1000n,20000p,200000b,200000s
+{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}<c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi5.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb><c:/Users/Pablo/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on PabloDiazVinambres-XianaCarreraAlonso.pdf (25 pages, 515670 bytes).
+PDF statistics:
+ 398 PDF objects out of 1000 (max. 8388607)
+ 312 compressed objects within 4 object streams
+ 66 named destinations out of 1000 (max. 500000)
+ 211 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-!  ==> Fatal error occurred, no output PDF file produced!

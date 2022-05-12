@@ -297,7 +297,7 @@ Interpretamos así que, en base a los datos de esta muestra, el intervalo $(-1.1
 Por último, para el intervalo de confianza de la varianza del error, usaremos el pivote
 
 $$
-\frac{(n-2)\hat{sigma^2}}{\sigma^2} \in \chi^2_{n-2}
+\frac{(n-2)\hat{\sigma^2}}{\sigma^2} \in \chi^2_{n-2}
 $$
 con lo que obtenemos el intervalo:
 $$
@@ -416,7 +416,7 @@ En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|
 ## 5) Intervalos de predición y confianza para la media condicionada 
 \textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
 
-En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Para obtener intervalos de confianza para la esperanza de Y condicionada a estos valores y de predicción, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.
+En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Para obtener intervalos de confianza para la esperanza de Y condicionada a estos valores y de predicción, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.  
 
 ```{r validacionnuevosdatos}
 nuevosValores <- c(2, 4, 6); nuevosValores
@@ -425,31 +425,64 @@ min(X) < min(nuevosValores) && max(X) > max(nuevosValores)
 # Construimos un data.frame  con los nuevos datos ya que predict necesita ese formato
 nuevosDatos = data.frame("X" = nuevosValores)
 ```
-Habiendo realizado esta comprobación, ya podemos obtener los intervalos utilizando la función \texttt{predict} sobre el modelo de R. Obtendremos ambos intervalos para el nivel de significación fijado anteriormente $\alpha = 0.01$.
 
-En primer lugar, pasando el argumento $\texttt{interval = "confidence"}$, hallamos los intervalos de confianza asociados a la media condicionada.
+Habiendo realizado esta comprobación, ya podemos obtener los intervalos indicados, que se calcularán para el nivel de significación fijado anteriormente $\alpha = 0.01$.En primer lugar, hallaremos los intervalos de confianza para la media condicionada utilizando el estimador $\tilde{Y}_0 = \hat{\beta_0} + \hat{\beta_1}x_0 = \overline{Y} + \hat{\beta_1}(x_0 - \overline{x})$, que es insesgado para $\mathbb{E}[Y|X=x_0]$ y tiene varianza 
+
+$$
+\text{Var}(\tilde{Y}_0) = \frac{\sigma^2}{n_0}, \:\text{dónde} \:\: n_0 = \frac{n}{1+\frac{(x_0-\overline{x})^2}{S^2_x}}
+$$
+generando así el intervalo:
+$$
+(\tilde{Y}_0 - t_{n-2, \frac{\alpha}{2}} \:\frac{\hat{\sigma}}{\sqrt{n_0}}, \tilde{Y}_0 + t_{n-2, \frac{\alpha}{2}} \:\frac{\hat{\sigma}}{\sqrt{n_0}})
+$$
+de esta forma, podemos calcular como sigue:
+```{r mediacondmano}
+# Calculo del estimador y0tilde y del factor n0 del intervalo
+nuevosValores.y0tilde = beta0.gorro + beta1.gorro * nuevosValores; nuevosValores.y0tilde
+nuevosValores.n0 = n/(1+(nuevosValores - mX)^2/var.X); nuevosValores.n0
+ 
+# Extremos del intervalo de confianza para la media condicionada
+# El cuantil usado es el mismo que en los I.C. de beta0
+nuevosValores.extrInfMediaCond = nuevosValores.y0tilde - beta0.cuantil * sd.error/sqrt(nuevosValores.n0)
+nuevosValores.extrSupMediaCond = nuevosValores.y0tilde + beta0.cuantil * sd.error/sqrt(nuevosValores.n0)
+nuevosValores.intervalosMediaCond = c(nuevosValores.extrInfMediaCond, nuevosValores.extrSupMediaCond); nuevosValores.intervalosMediaCond
+```
+NO FUNCIONA (EXCEPTO LOS Y0TILDE) NO SE QUE LE PASA
+o también podemos obtenerlos automáticamente utilizando la función \texttt{predict} sobre el modelo de R pasándole el argumento $\texttt{interval = "confidence"}$:
 ```{r intmediacond}
 predict(modelo, newdata = nuevosDatos, interval = "confidence", level = alfa)
 ```
-Los extremos inferiores se encuentran en la columna _lwr_, y los superiores, en _upr_, de forma que $2$ tiene un intervalo asociado $(2.1371613, 2.1399684)$; $4$, $(0.0916848, 0.0938893)$; y $6$, $(-1.9542755, -1.9517059)$. Con los datos de la muestra, los valores de la media condicionada al añadir cada uno de los nuevos valores se encuentrarán en el intervalo respectivo con un 99% de probabilidad.
+Los extremos inferiores se encuentran en la columna \texttt{lwr}, y los superiores, en \texttt{upr}, de forma que $2$ tiene un intervalo asociado $(2.1371613, 2.1399684)$; $4$, $(0.0916848, 0.0938893)$; y $6$, $(-1.9542755, -1.9517059)$. Con los datos de la muestra, los valores de la media condicionada al añadir cada uno de los nuevos valores se encontrarán en el intervalo respectivo con un 99% de probabilidad.
 
-Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de $n$, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra. Aun así, ambos estarán centrados en el mismo punto, el valor correspondiente en la columna _fit_, que es el valor del estadístico asociado a la construcción del intervalo por el método pivotal.
+Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de $n$, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra. Aun así, ambos estarán centrados en el mismo punto, el valor correspondiente en la columna \mathbb{fit}, que es el valor del estadístico asociado a la construcción del intervalo por el método pivotal.
 
 
-CALCULAR A MANO (ESTÁN EN LOS APUNTES)
+En este caso, plantearemos en cómo se aproxima $\tilde{Y_0}$ a la nueva observación $Y = \beta_0 + \beta_1 x_0 + \epsilon$. Aquí tenemos que $\mathbb{E}[\tilde{Y_0}] = \mathbb{E}[Y_0]$ y $Var(\tilde{Y_0} - Y_0) = \sigma^2 (1 + \frac{1}{n_0})$, de dónde tenemos el intervalo de confianza para la nueva observación $Y_0$:
+$$
+(\tilde{Y}_0 - t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}}, \tilde{Y}_0 + t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}})
 
-Para la predicción, pasamos el argumento $\texttt{interval = "prediction"}$
+$$
+calculamos entonces estos intervalos para cada nuevo dato:
+```{r intprediccionmano}
+# Extremos del intervalo de confianza para la predicción
+nuevosValores.extrInfPred = nuevosValores.y0tilde - beta0.cuantil * sd.error * sqrt(1 + 1 / nuevosValores.n0)
+nuevosValores.extrSupPred = nuevosValores.y0tilde + beta0.cuantil * sd.error * sqrt(1 + 1 / nuevosValores.n0)
+nuevosValores.intervalosPred = c(nuevosValores.extrSupPred, nuevosValores.extrSupPred); nuevosValores.intervalosPred
+
+```
+TAMPOCO FUNCIONA ??=?¿?¿?
+
+y para hallarlos automáticamente, pasamos esta vez el argumento \texttt{interval = "prediction"}:
 ```{r intprediccion}
 predict(modelo, newdata = nuevosDatos, interval = "prediction", level = alfa)
 ```
 
-OBTENEMOS LOS INTERVALOS_ PONER:
+Obtenemos los intervalos $2$, $(2.12646188, 2.1506678)$; $4$, $(0.08071534, 0.1048588)$; y $6$, $(-1.96508046, -1.9409010)$. Con los datos de la muestra, los valores tomados por la variable respuesta al añadir cada uno de los nuevos valores de la variable explicativa se encontrarán en el intervalo respectivo con un 99% de probabilidad.
 
-Los valores estimados de la media condicional y de los valores de la variable Y, que se pueden comprobar en la columna _fit_, coinciden, puesto que su cálculo es el mismo:
+Los valores estimados de la media condicional y de los valores de la variable Y, que se pueden comprobar en la columna \texttt{fit}, coinciden, puesto que su cálculo es el mismo:
 ```{r fit}
-beta0.gorro + beta1.gorro*nuevosDatos
+nuevosValores.y0tilde
 ```
-
 
 ## Ejercicio 6 
 \textit{Calcula alguna medida de bondad de ajuste del modelo lineal simple considerado.}
@@ -505,7 +538,7 @@ Con el objetivo de realizar una prueba más precisa, planteamos el siguiente con
 $$
 \begin{cases}
 H_0: Y=\beta_0+\beta_1X+\epsilon\\
-H_a: Y=\beta_0+\beta_1X+\beta_2\cdotX^2\epsilon
+H_a: Y=\beta_0+\beta_1X+\beta_2X^2\epsilon
 \end{cases}
 $$
 
@@ -608,7 +641,7 @@ El p-valor es de $0.763 > 0.01 = \alpha$. Por un razonamiento análogo a los ant
 ### Normalidad
 Para corroborar que el error tiene distribución normal, haremos varias representaciones gráficas que nos permitan intuir si la hipótesis se ajusta a los datos. Trabajaremos con los residuos estandarizados, pues no tienen la misma varianza y la correlación entre cada 2 de ellos puede ser distinta (provienen de distribuciones diferentes).
 
-Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería \texttr{car}), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
+Presentamos 3 gráficos: un histograma, un boxplot y un qqplot (para el cual necesitamos la librería \texttt{car}), aunque centraremos nuestra atención en el último de ellos, el más relevante en lo que concierne al estudio de la normalidad.
 
 ```{r representacionnormalidad, echo=FALSE}
 residuos.estan = rstandard(modelo)
@@ -685,8 +718,7 @@ Asumiremos que nuestros datos han sido medidos a lo largo del tiempo, de forma q
 Nos preguntamos entonces si existe algún tipo de relación entre las observaciones, esto es:
 $$
 \begin{cases}
-H_0: \epsilon\text{ son incorrelacionados temporalmente}\\
-H_a: \epsilon\text{ son correlacionados temporalmente de orden k}
+H_0: \epsilon\text{ son incorrelacionados temporalmente}\\H_a: \epsilon\text{ son correlacionados temporalmente de orden k}
 \end{cases}
 $$
 En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Realizaremos un test _Ljung-Box_ con la función \texttt{Box.test}, para lo cual tendremos que fijar un k de antemano. Dado que probar todos los valores sería imposible, nos limitaremos a $k = 1, 2$ y 3. 
