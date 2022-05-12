@@ -689,5 +689,7 @@ H_0: \epsilon\text{ son incorrelacionados temporalmente}\\
 H_a: \epsilon\text{ son correlacionados temporalmente de orden k}
 \end{cases}
 $$
-En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Realizaremos un test _Ljung-Box_ con la función \texttt{Box.test}, para lo cual tendremos que fijar un k de antemano. Dado que probar todos los valores sería imposible, nos limitaremos a $k = 1, 2$ y 3. 
-Box.test(res.estan, type = "Ljung-Box", lag=2) 
+En el contraste planteado, $k\in\mathbb{N}$, $k>1$, es el retardo, esto es, la separación entre los instantes de tiempo que influyen sobre el instante actual. Realizaremos un test _Ljung-Box_ con la función \texttt{Box.test}, para lo cual tendremos que fijar un k de antemano. Dado que probar todos los valores sería imposible y no tenemos información sobre la toma de datos, nos limitaremos a algunos valores representativos: $k = 1, 2$ y $3$. 
+
+Box.test(, type = "Ljung-Box", lag=2) 
+Box.test(res.estan, type = "Ljung-Box", lag=3) 
