@@ -378,24 +378,25 @@ T_1 = \frac{\hat{\beta_1}}{\hat\sigma / {S_x \sqrt{n}}} \in T_{n-2}
 $$
 
 Como estamos en un constraste bilateral, rechazaremos la hipótesis nula si los valores absolutos de los estadísticos son superiores al cuantil positivo de la T de Student, esto es,
-$$
+
+\begin{gather*}
 \text{Rechazar } H_0: \beta_0 = 0 \text{ si } T_0 > t_{n-2, \alpha/2}
-PONER EN DOS LÍNEAS
 \text{Rechazar } H_1: \beta_1 = 0 \text{ si } T_1 > t_{n-2, \alpha/2}
-$$
+\end{gather*}
 
 Calculemos ambos estadísticos y comprobemos si están en la región de rechazo o en la de aceptación.
 
 ```{r regionrechazo}
 # Cálculo de los valores de los estadísticos de contraste para beta0 y beta1 bajo H0
-beta0.t <- abs(beta0.gorro) / (sqrt(var.error * (1 / n + mX ^ 2 / (n * var.X)))); beta0.t
-beta1.t <- abs(beta1.gorro) / (sd.error / sqrt(n * var.X)); beta1.t
+beta0.t <- beta0.gorro / (sqrt(var.error * (1 / n + mX ^ 2 / (n * var.X)))); beta0.t
+beta1.t <- beta1.gorro / (sd.error / sqrt(n * var.X)); beta1.t
 
 # Ambos contrastes caen en la región de rechazo
-beta0.t > beta0.cuantil 
-beta1.t > beta1.cuantil
+abs(beta0.t) > beta0.cuantil 
+abs(beta1.t) > beta1.cuantil
 ```
-Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que no existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de H_0. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
+
+Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que no existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de $H_0$. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
 Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula):
 ```{r pvalores}
@@ -409,11 +410,9 @@ Alternativamente, podemos obtener los valores de estos dos contrastes de signifi
 ```{r signifauto}
 summary(modelo)
 ```
-MIRAR SI LOS VALORES A MANO COINCIDEN
+En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al valor observado del estadístico de contraste y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2*10^{-16}$), las interpretaciones coincide con las ya expuestas. Rechazamos entonces la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
 
-En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al valor observado del estadístico de contraste y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2*10^{-16}$), las interpretaciones coincide con las ya expuestas. Rechazamos la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
-
-## 5) Intervalos de predición y confianza para la media condicionada 
+## 5) Intervalos de confianza para la predicción sobre nuevos datos
 \textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
 
 En este apartado, consideremos los 3 nuevos valores para la variable explicativa: ${2, 4, 6}$. Para obtener intervalos de confianza para la esperanza de Y condicionada a estos valores y de predicción, será necesario comprobar primero que estos datos están dentro del rango de observación de X. Esto es necesario ya que no sabemos cómo se comporta el modelo fuera del rango observado, y no podemos hacer extrapolaciones de forma confiable.  
@@ -454,13 +453,13 @@ predict(modelo, newdata = nuevosDatos, interval = "confidence", level = alfa)
 ```
 Los extremos inferiores se encuentran en la columna \texttt{lwr}, y los superiores, en \texttt{upr}, de forma que $2$ tiene un intervalo asociado $(2.1371613, 2.1399684)$; $4$, $(0.0916848, 0.0938893)$; y $6$, $(-1.9542755, -1.9517059)$. Con los datos de la muestra, los valores de la media condicionada al añadir cada uno de los nuevos valores se encontrarán en el intervalo respectivo con un 99% de probabilidad.
 
-Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de $n$, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra. Aun así, ambos estarán centrados en el mismo punto, el valor correspondiente en la columna \mathbb{fit}, que es el valor del estadístico asociado a la construcción del intervalo por el método pivotal.
+Obtenemos ahora los intervalos de predicción, los cuáles serán más amplios que los anteriores dado que estamos considerando una variable aleatoria, $Y_0$ que es más difícil de estimar que un parámetro, $\mathbb{E}[Y|X=x_0]$. Además, estos intervalos de confianza no dependen de $n$, a diferencia de los primeros, de forma que la precisión de la estimación no aumentaría aunque incrementásemos el tamaño de la muestra. Aun así, ambos estarán centrados en el mismo punto, el valor correspondiente en la columna \texttt{fit}, que es el valor del estadístico asociado a la construcción del intervalo por el método pivotal.
 
 
 En este caso, plantearemos en cómo se aproxima $\tilde{Y_0}$ a la nueva observación $Y = \beta_0 + \beta_1 x_0 + \epsilon$. Aquí tenemos que $\mathbb{E}[\tilde{Y_0}] = \mathbb{E}[Y_0]$ y $Var(\tilde{Y_0} - Y_0) = \sigma^2 (1 + \frac{1}{n_0})$, de dónde tenemos el intervalo de confianza para la nueva observación $Y_0$:
+
 $$
 (\tilde{Y}_0 - t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}}, \tilde{Y}_0 + t_{n-2, \frac{\alpha}{2}} \:\hat{\sigma}\sqrt{1 + \frac{1}{n_0}})
-
 $$
 calculamos entonces estos intervalos para cada nuevo dato:
 ```{r intprediccionmano}
