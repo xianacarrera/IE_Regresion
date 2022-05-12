@@ -88,19 +88,37 @@ str(datos)
 X <- datos[,"X"]
 Y <- datos[,"Y47"]
 
+# Guardamos el número de datos
+n <- length(Y)
+
 # Y realizamos un pequeño análisis estadístico exploratorio
-summary(datos)
+summary(datos)        # Obtenemos mínimo, máximo, media, mediana y cuantiles
+var(X)*(n-1)/n        # Varianza de X
+var(Y)*(n-1)/n        # Varianza de Y
+sqrt(var(X)*(n-1)/n)      # Desviación típica de X
+sqrt(var(Y)*(n-1)/n)      # Desviación típica de Y
+
 par(mfrow=c(1,2))     # Gráficos dispuestos en 1 fila con 2 columnas
 hist(Y, col=viridis(7), main="Histograma de la variable respuesta")
 rug(Y)
 boxplot(Y, col="gray", main="Diagrama de caja de la variable respuesta")
 par(mfrow=c(1,1))     # Reiniciamos al valor predeterminado para las ventanas gráficas
-
-
-
-# Guardamos el número de datos
-n <- length(Y)
 ```
+Podemos destacar los valores más relevantes del análisis exploratorio. Vemos que los valores de los datos de X abarcan el rango $[0.095, 9.921]$, y los de Y, $[-7.0839, 5.9654]$. Sus respectivas medianas son $3.432$ para X, y $0.1661$ para Y. Tenemos también que:
+$$
+\overline{x} = \frac{1}{n} \sum_{i=1}^n x_i = 4.268 \;\;\text{unidades de X}, \quad
+\overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i = -0.1815 \;\;\text{unidades de Y}
+
+LÍNEA 2fdsfdskjllllllllllllllllllllllllllllllllllllllllllllllllllllll
+S_x^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \overline{x}) = 2.844383  \;\;\text{(unidades de X)}^2 
+S_Y^2 = \frac{1}{n}\sum_{i=1}^n (Y_i - \overline{Y}) = 9.365897  \;\;\text{(unidades de Y)}^2 
+
+LÍNEA 3fdsfdskjllllllllllllllllllllllllllllllllllllllllllllllllllllll
+S_x = \sqrt{S_x^2} = 2.844383
+S_Y = \sqrt{S_Y^2} = 3.060375
+$$
+Varios de estos valores, como la media o la varianza, nos serán de interés a lo largo del ajuste del modelo de regresión, y volveremos a ellos en puntos posteriores. 
+
 
 # 1) Relación entre variable explicativa y variable respuesta
 En primer lugar, calculamos la covarianza y el coeficiente de correlación entre las variables:
@@ -116,9 +134,9 @@ covar = cov(X,Y) * (n - 1) / n; covar     # Covarianza
 cov(X, Y)                                 # Cuasicovarianza
 cor(X, Y)                                 # Coeficiente de correlación
 ```
-Que la covarianza sea distinta de 0 nos indica que hay una relación lineal. Además, al ser negativa, deducimos que esta es indirecta/inversa, es decir, que al aumentar la variable X, la variable Y diminuye. 
+Que la covarianza sea distinta de 0 nos indica que hay una relación lineal. Además, al ser negativa, deducimos que esta es indirecta/inversa, es decir, que al aumentar la variable X, la variable Y diminuye. Esto nos sirve de fundamento para que posteriormente planteemos una recta de regresión, pues por el contrario una covarianza nula o muy próxima a 0 sería indicativa de que no existe una relación lineal significativa entre las variables (podría no haber relación, o ser esta de otro tipo, como cuadrática, cúbica, etc.). En tal caso, deberíamos descartar el ajute a un modelo de regresión lineal. 
 
-Adionalmente, ya sabemos que la recta de regresión que obtendremos posteriormente será decreciente, pues la pendiente estimada, $\beta_1 = \frac{S_{xY}}{S_x^2}$, tiene el mismo signo que $S_{xY}$, al ser la varianza siempre no negativa, y hemos obtenido que $S_{xY} < 0$.
+Adionalmente, ya podemos anticipar que la mencionada recta de regresión será decreciente, pues la pendiente estimada con la que la construiremos, $\beta_1 = \frac{S_{xY}}{S_x^2}$, tiene el mismo signo que $S_{xY}$, al ser la varianza siempre no negativa, y hemos obtenido que $S_{xY} < 0$.
 
 Por un razonamiento análogo, $r_{xY}$ también debe tener el mismo signo que $S_{xY}$ y, en efecto, esto es lo que observamos en los resultados. La interpretación de su signo es, por tanto, la misma que la expuesta para la covarianza (relación lineal inversa/indirecta).
 
@@ -130,8 +148,8 @@ Para visualizar la relación entre la variable explicativa y la variable respues
 En primer lugar, hallamos el vector de medias o centro de gravedad aplicando \texttt{mean} en ambas variables:
 
 ```{r medias}
-mX <- mean(X)
-mY <- mean(Y)
+mX <- mean(X)         # Media de X
+mY <- mean(Y)         # Media de Y
 
 c(mX, mY) # Mostramos el vector de medias
 ```
@@ -163,13 +181,15 @@ $$
 Y = \beta_0 + \beta_1X + \epsilon
 $$
 
-Ajustamos entonces este modelo a nuestros datos mediante la función \texttt{lm}:
+Ajustamos entonces este modelo lineal a nuestros datos mediante la función \texttt{lm}, indicando Y como la variable dependiente, y X como la independiente:
 ```{r modelo}
 modelo = lm(Y~X); modelo
 ```
-y obtenemos un intercepto $\beta_0 = 4.184$ y una pendiente de $\beta_1 = -1.023$, lo cual concuerda con lo observado anteriormente en la nube de puntos. 
+Obtenemos un $\beta_0 = 4.184$. Este es el intercepto, es decir, el valor estimado de Y cuando $X = 0$. La pendiente estimada de la recta será $\beta_1 = -1.023$. Esto será lo que disminuya la variable respuesta cuando la variable explicativa aumente en una unidad. Ambos resultados concuerdan con lo observado anteriormente en la nube de puntos. 
 
-En los siguientes ejercicios, analizaremos en profundidad diferentes caracteríssticas de este modelo y obtendremos inferencia a partir del mismo. Nótese que para que las conclusiones extraídas en estos ejercicios tengan validez, deberemos suponer que se cumplen las hipótesis de linealidad, homocedasticidad y normalidad e independencia de los errores. Las comprobaremos de forma precisa en el ejercicio 7, pero de no ser válida alguna de ellas, tendríamos que revisar y descartar multitud de resultados.
+El modelo obtenido almacena otros datos de interés, tales como los residuos (\texttt{modelo\$residuals}), los valores ajustados de la Y (\texttt{modelo\$fitted.values}), etc.
+
+En los siguientes ejercicios, analizaremos en profundidad diferentes características de este modelo y obtendremos inferencia a partir del mismo. Nótese que para que las conclusiones extraídas en estos ejercicios tengan validez, deberemos suponer que se cumplen las hipótesis de linealidad, homocedasticidad y normalidad e independencia de los errores. Las comprobaremos de forma precisa en el ejercicio 7, pero de no ser válida alguna de ellas, tendríamos que revisar y descartar multitud de resultados.
 
 ## 2) Estimaciones puntuales de los parámetros y representación del modelo
 Para la estimación puntual de los parámetros intercepto $\beta_0$, pendiente $beta_1$ y para la de la varianza del error $\sigma^2$ podemos aplicar directamente las fórmulas obtenidas en la parte teórica de la asignatura:
@@ -728,4 +748,8 @@ Box.test(residuos.estan, type = "Ljung-Box", lag=2)
 Box.test(residuos.estan, type = "Ljung-Box", lag=3) 
 ```
 
-Vemos que los p-valores respectivos son $0.05949$, $0.06122$, $0.08574$. Todos ellos son superiores al nivel de significación fijado, de modo que, en base a nuestro criterio, no existen evidencias estadísticamente significativas a favor de $H_a$. Como no tenemos pruebas en contra de $H_0$, podemos asumir que es cierta, esto es, que los errores están incorrelacionados temporalmente. Como ya partíamos de que estaban 
+Vemos que los p-valores respectivos son $0.05949$, $0.06122$, $0.08574$. Todos ellos son superiores al nivel de significación fijado, de modo que, en base a nuestro criterio, no existen evidencias estadísticamente significativas a favor de $H_a$. Como no tenemos pruebas en contra de $H_0$, podemos asumir que es cierta, esto es, que los errores están incorrelacionados temporalmente. Como ya partíamos de que seguían una distribución normal, asumiremos entonces que son temporalmente independientes.
+
+
+## Conclusión
+En base a los resultados de los contrastes realizados (bajo los distintos criterios y restricciones impuestas), nuestro modelo cumple las hipótesis de linealidad, homocedasticidad, normalidad e independencia. Es, por tanto, un modelo de regresión lineal correcto, con lo que los podemos aseverar que las interpretaciones que hicimos en anteriores ejercicios son válidas.
