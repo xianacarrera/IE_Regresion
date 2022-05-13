@@ -65,7 +65,7 @@ Por comodidad para cálculos posteriores, también guardamos el número de datos
 
 ```{r cars}
 # Configurar wd a la carpeta actual (solo en RStudio)
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # nolint
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # nolint
 # Ejemplo de uso de setwd para cambiar el directorio actual:
 # setwd("C:\\Users\\Pablo\\Desktop\\IE_Regresion") # nolint
 
@@ -478,12 +478,16 @@ abs(beta1.t) > beta1.cuantil
 
 Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos en ambos casos a que no existen evidencias estadísticamente significativas a favor de $H_a$. Es decir, no tenemos pruebas a favor de $H_0$. Podemos asumir entonces que tanto el intercepto $\beta_0$ como la pendiente $\beta_1$ del modelo serán distintos de 0. En base a esto, lo sensato será no simplificar nuestro modelo y continuar realizando regresión lineal con estos 2 parámetros.
 
-Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula):
+Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula). Puesto que trabajamos con un contraste bilateral, esta es la probabilidad que queda en las colas limitadas por $|T_{obs}|$ y $-|T_{obs}|$, donde ${T_obs}$ es el valor del estadístico observado:
+$$
+\mathbb{P}(|T| > |T_{obs}|), \;\;\text{donde T es una distribución }T_{n-2}
+$$
+
+Así,
+
 ```{r pvalores}
-beta0.pvalor <- dt(beta0.t, df = n - 2)
-beta0.pvalor
-beta1.pvalor <- dt(beta1.t, df = n - 2)
-beta1.pvalor
+beta0.pvalor <- 2 * (1 - pt(abs(beta0.t), df = n - 2)); beta0.pvalor
+beta1.pvalor <- 2 * (1 - pt(abs(beta1.t), df = n - 2)); beta1.pvalor
 ```
 
 Como vemos, en ambos contrastes el p-valor es prácticamente nulo ($<10^{-50}$), lo cual nos indica que las pruebas para rechazar la hipótesis nula son estadísticamente significativas no solo para nuestro $\alpha$, sino también para cualquiera de los niveles de significación habituales o incluso con precisiones mucho mayores.
@@ -492,7 +496,7 @@ Alternativamente, podemos obtener los valores de estos dos contrastes de signifi
 ```{r signifauto}
 summary(modelo)
 ```
-En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al cociente entre la columna \texttt{estimate} y la columna \texttt{std.error} (el valor observado del estadístico de contraste) y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2\cdot10^{-16}$), las interpretaciones coincide con las ya expuestas. Rechazamos entonces la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
+En concreto, los valores relevantes son el \texttt{t-value} y el \texttt{Pr(>|t|)} de las filas \texttt{(Intercept)} y \texttt{X} que se corresponden al cociente entre la columna \texttt{estimate} y la columna \texttt{std.error} (el valor observado del estadístico de contraste) y su p-valor, para el intercepto $\beta_0$ y la pendiente $\beta_1$ respectivamente. Como en ambos casos el p-valor es extremadamente pequeño (R nos indica que es menor que $2\cdot10^{-16}$), las interpretaciones coinciden con las ya expuestas: $\beta_0$ y $\beta_1$ son significativamente distintas de 0 y tienen ambas efecto sobre la variable respuesta. Rechazamos entonces la hipótesis nula y demostramos que $\beta_0 \neq 0$ y $\beta_1 \neq 0$.
 
 ## 5) Intervalos de confianza para la predicción sobre nuevos datos
 \textit{Si consideramos que la variable X toma 3 nuevos valores: 2, 4 y 6 unidades, proporciona intervalos de predicción e intervalos de confianza para la media condicionada de la variable Y. Interpreta los resultados obtenidos.}
@@ -826,5 +830,8 @@ Box.test(residuos.estan, type = "Ljung-Box", lag = 3)
 Vemos que los p-valores respectivos son $0.05949$, $0.06122$ y $0.08574$. Todos ellos son superiores al nivel de significación fijado, de modo que, en base a nuestro criterio, no existen evidencias estadísticamente significativas a favor de $H_a$. Como no tenemos pruebas en contra de $H_0$, podemos asumir que es cierta, esto es, que los errores están incorrelacionados temporalmente. Como ya partíamos de que seguían una distribución normal, asumiremos entonces que son temporalmente independientes.
 
 
-## Conclusión
+### Resultados ejercicio 7
 En base a los resultados de los contrastes realizados (bajo los distintos criterios y restricciones impuestas), nuestro modelo cumple las hipótesis de linealidad, homocedasticidad, normalidad e independencia. Es, por tanto, un modelo de regresión lineal correcto, con lo que los podemos aseverar que las interpretaciones que hicimos en anteriores ejercicios son válidas.
+
+## Conclusión
+En base a todas las medidas y tests realizados en los ejercicios previos, llegamos a la conclusión de que nuestro modelo de regresión lineal simple se ajusta excelentemente a los datos medidos. Esto es debido a que se trata de un modelo tanto potente como válido, y a que fuera la opción indicada por los contrastes que lo equiparaban con modelos alternativos. De esta forma, hallamos una potente herramienta para relacionar las dos variables, explicar los datos muestrales tomados y predecir nuevos valores de $Y$. 
