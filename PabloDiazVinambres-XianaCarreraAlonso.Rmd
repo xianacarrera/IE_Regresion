@@ -45,7 +45,7 @@ Esta elección se debe al enunciado del ejercicio 3, donde se pide emplear un ni
 ## Librerías utilizadas
 Cargamos a continuación todas las librerías que utilizaremos a lo largo de la ejecución. Si alguno de los paquetes no ha sido previamente instalado, debe ejecutarse la instrucción \texttt{install.packages("nombre\_del\_paquete")}.  
 
-```{r librerias, results='hide'}
+```{r librerias, results='hide', warning=FALSE, message=FALSE}
 # Para instalar: install.packages("paquete_de_ejemplo")
 library(ggplot2) # Para diagrama de dispersión con región de confianza
 library(rpanel) # Controles adicionales en sm.regression
@@ -128,7 +128,7 @@ Varios de estos valores, como la media o la varianza, nos serán de interés a l
 # 1) Relación entre variable explicativa y variable respuesta
 En primer lugar, calculamos la covarianza y el coeficiente de correlación entre las variables:
 $$
-S_{xY}=\frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})(Y_i-\overline{Y}))\quad\quad\quad 
+S_{xY}=\frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})(Y_i-\overline{Y})\quad\quad\quad 
 r_{xY}=\frac{S_{xY}}{\sqrt{S_x^2}\sqrt{S_Y^2}}
 $$
 
@@ -406,10 +406,10 @@ plot(x_chi, y_chi,
 )
 segments(x0 = var.error.cuantilinferior, y0 = -0.05,
         x1 = var.error.cuantilinferior,
-        y1 = dchisq(var.error.cuantilinferior, df = n - 2) + 0.05, col = "red")
+        y1 = dchisq(var.error.cuantilinferior, df = n - 2) + 0.005, col = "red")
 segments(x0 = var.error.cuantilsuperior, y0 = -0.05,
         x1 = var.error.cuantilsuperior,
-        y1 = dchisq(var.error.cuantilinferior, df = n - 2) + 0.05, col = "red")
+        y1 = dchisq(var.error.cuantilinferior, df = n - 2) + 0.005, col = "red")
 ```
 
 
@@ -455,7 +455,7 @@ $$
 
 Si no consiguiéramos demostrar la hipótesis alternativa para el primer contraste, tendríamos que considerar un modelo más sencillo, que no solo facilitaría el análisis estadístico, sino que sería más correcto y realista de cara a las interpretaciones que podamos hacer. En el caso del segundo contraste, no demostrar la hipótesis alternativa equivaldría a invalidar nuestro modelo, pues significaría que no hay regresión.
 
-Emplearemos el nivel de significación definido para el análisis: $\alpha = 0.01$.
+Emplearemos la significación definida para el análisis: $\alpha = 0.01$.
 
 En primer lugar, calculamos los contrastes de forma manual.
 
@@ -469,7 +469,7 @@ $$
 Como estamos en un contraste bilateral, rechazaremos la hipótesis nula si los valores absolutos de los estadísticos son superiores al cuantil positivo de la T de Student, esto es,
 
 \begin{gather*}
-\text{Rechazar } H_0: \beta_0 = 0 \text{ si } |T_0| = \frac{|\hat\beta_0|}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} \in T_{n-2} > t_{n-2, \alpha/2} \\
+\text{Rechazar } H_0: \beta_0 = 0 \text{ si } |T_0| = \frac{|\hat\beta_0|}{\hat\sigma\sqrt{\frac{1}{n}+\frac{\overline{x}^2}{nS_x^2}}} > t_{n-2, \alpha/2} \\
 \text{Rechazar } H_1: \beta_1 = 0 \text{ si } |T_1| = \frac{|\hat{\beta_1}|}{\hat\sigma / {S_x \sqrt{n}}} > t_{n-2, \alpha/2} \\
 \end{gather*}
 
@@ -493,10 +493,8 @@ Habiendo fijado previamente el nivel de significación $\alpha = 0.01$, llegamos
 Podemos también ver los respectivos p-valores (el menor nivel de significación para el cual podemos aceptar la hipótesis nula). Puesto que trabajamos con un contraste bilateral, esta es la probabilidad que queda en las colas limitadas por $|T_{obs}|$ y $-|T_{obs}|$, donde ${T_obs}$ es el valor del estadístico observado:
 $$
 \mathbb{P}(|T| > |T_{obs}|), \;\;\text{donde T es una distribución }T_{n-2}
-
-Así,
-
 $$
+Así,
 ```{r pvalores}
 beta0.pvalor <- 2 * (1 - pt(abs(beta0.t), df = n - 2)); beta0.pvalor
 beta1.pvalor <- 2 * (1 - pt(abs(beta1.t), df = n - 2)); beta1.pvalor
@@ -676,7 +674,7 @@ No obstante, este contraste solo nos ha aportado información sobre la equiparac
 $$
 \begin{cases}
 H_0: Y=\beta_0+\beta_1X+\epsilon\\
-H_a: Y=\beta_0+\beta_1X+\beta_2X^2+\beta_3X^3\epsilon
+H_a: Y=\beta_0+\beta_1X+\beta_2X^2+\beta_3X^3+\epsilon
 \end{cases}
 $$
 
@@ -727,7 +725,8 @@ residuos <- modelo$residuals
 plot(X, residuos,
         main = "Diagrama de dispersión", pch = 16,
         sub = "Relación entre la variable explicativa y los residuos del modelo",
-        ylab = "Residuos"
+        ylab = "Residuos",
+        cex.sub = 0.5
 )
 abline(h = 0, col = "gray", lwd = 2)
 
@@ -778,7 +777,8 @@ rug(residuos.estan)
 
 boxplot(residuos.estan, col = "gray", main = "Diagrama de caja")
 
-qqPlot(residuos.estan, main = "Diagrama cuantil-cuantil", ylab = "Residuos estandarizados", xlab = "Residuos teóricos")
+qqPlot(residuos.estan, main = "Diagrama cuantil-cuantil", 
+       ylab = "Residuos estandarizados", xlab = "Residuos teóricos")
 ```
 
 En el histograma podemos apreciar una cierta asimetría hacia la derecha (valores más altos). En el boxplot o diagrama de caja vemos que la media está centrada en el centro de la caja, un buen indicador. No obstante, la cola izquierda es de una longitud ligeramente mayor, lo cual es indicativo de la asimetría mencionada, al estar los datos más concentrados alrededor de valores más altos.
